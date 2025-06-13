@@ -1,7 +1,8 @@
 'use client';
 
-import { Search, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { City } from '@/types/weather';
+import { SearchBar } from '@/components/SearchBar';
 
 interface HomeScreenProps {
   cities: City[];
@@ -11,14 +12,6 @@ interface HomeScreenProps {
 }
 
 export function HomeScreen({ cities, onSearch, onCityClick, isLoading }: HomeScreenProps) {
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const query = formData.get('search') as string;
-    if (query.trim()) {
-      onSearch(query.trim());
-    }
-  };
 
   const getWeatherGradient = (condition: string) => {
     const lowerCondition = condition.toLowerCase();
@@ -56,17 +49,12 @@ export function HomeScreen({ cities, onSearch, onCityClick, isLoading }: HomeScr
         </div>
 
         {/* Search Bar */}
-        <form onSubmit={handleSearchSubmit} className="mb-8">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              name="search"
-              placeholder="Search for a city or airport"
-              className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-            />
-          </div>
-        </form>
+        <SearchBar
+          onSearch={onSearch}
+          isLoading={isLoading}
+          placeholder="Search for a city or airport"
+          className="mb-8"
+        />
 
         {/* Cities List */}
         <div className="space-y-4">

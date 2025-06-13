@@ -40,4 +40,35 @@ export const weatherRouter = createTRPCRouter({
         throw new Error('Failed to fetch weather data');
       }
     }),
+
+  searchLocations: publicProcedure
+    .input(
+      z.object({
+        query: z.string().min(1, 'Search query is required'),
+      })
+    )
+    .query(async ({ input }) => {
+      try {
+        const response = await fetch(
+          `${WEATHER_API_BASE_URL}/search.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(
+            input.query
+          )}`
+        );
+
+        if (!response.ok) {
+          if (response.status === 400) {
+            throw new Error('Invalid search query');
+          }
+          throw new Error(`Weather API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        }
+        throw new Error('Failed to search locations');
+      }
+    }),
 });

@@ -8,6 +8,7 @@ import { useWeatherStore } from '@/store/weatherStore';
 import { createCityFromWeatherData } from '@/store/weatherStore';
 import { trpc } from '@/utils/trpc';
 import { City } from '@/types/weather';
+import { useToast } from '@/components/ui/toast';
 
 export default function Home() {
   const [showSearchModal, setShowSearchModal] = useState(false);
@@ -21,6 +22,8 @@ export default function Home() {
     setError,
     error
   } = useWeatherStore();
+
+  const { addToast } = useToast();
 
   // Fetch weather for search query
   const {
@@ -63,9 +66,14 @@ export default function Home() {
   useEffect(() => {
     if (searchError) {
       setError(searchError.message);
+      addToast({
+        type: 'error',
+        title: 'Search Error',
+        description: searchError.message,
+      });
       setSearchQuery(''); // Clear search query on error
     }
-  }, [searchError, setError]);
+  }, [searchError, setError, addToast]);
 
   const handleSearch = (city: string) => {
     setError(null);
