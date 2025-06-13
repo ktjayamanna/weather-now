@@ -19,6 +19,7 @@ export default function Home() {
   const {
     defaultCities,
     addDefaultCity,
+    removeDefaultCity,
     setError,
     error
   } = useWeatherStore();
@@ -103,12 +104,22 @@ export default function Home() {
     setSelectedCity(null);
   };
 
+  const handleRemoveCity = (cityId: string) => {
+    removeDefaultCity(cityId);
+    addToast({
+      type: 'info',
+      title: 'City Unpinned',
+      description: 'City has been unpinned from your list.',
+    });
+  };
+
   return (
     <>
       <HomeScreen
         cities={defaultCities}
         onSearch={handleSearch}
         onCityClick={handleCityClick}
+        onRemoveCity={handleRemoveCity}
         isLoading={isSearchLoading && searchQuery === 'Colombo, Sri Lanka'}
       />
 
