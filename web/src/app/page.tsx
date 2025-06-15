@@ -28,6 +28,7 @@ export default function Home() {
     setError,
     error,
     updateCityWeather,
+    updateCityForecast,
     lastAutoUpdate,
     setLastAutoUpdate
   } = useWeatherStore();
@@ -169,6 +170,29 @@ export default function Home() {
     }
   }, [searchError, setError, addToast]);
 
+  // Fetch forecast for selected city when modal opens
+  const {
+    data: forecastData,
+    isLoading: isForecastLoading,
+    error: forecastError
+  } = trpc.weather.getForecast.useQuery(
+    {
+      city: selectedCity ? `${selectedCity.name}, ${selectedCity.country}` : '',
+      days: 2
+    },
+    {
+      enabled: !!selectedCity && showCityDetails,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  // Handle forecast data
+  useEffect(() => {
+    if (forecastData && selectedCity) {
+      updateCityForecast(selectedCity.id, forecastData.forecast);
+    }
+  }, [forecastData, selectedCity?.id, updateCityForecast]);
+
   const handleSearch = (city: string) => {
     setError(null);
     setSearchQuery(city);
@@ -180,6 +204,11 @@ export default function Home() {
     setSelectedCity(city);
     setShowCityDetails(true);
   };
+
+  // Get the selected city with updated forecast data from the store
+  const selectedCityWithForecast = selectedCity ?
+    defaultCities.find(c => c.id === selectedCity.id) || selectedCity :
+    null;
 
   const handleAddCity = (city: City) => {
     addDefaultCity(city);
@@ -242,12 +271,13 @@ export default function Home() {
         />
       )}
 
-      {showCityDetails && selectedCity && (
+      {showCityDetails && selectedCityWithForecast && (
         <CityDetailsModal
-          city={selectedCity}
+          city={selectedCityWithForecast}
           onClose={handleCloseCityDetails}
           onRefresh={refreshCityWeather}
           isRefreshing={isRefreshLoading}
+          isForecastLoading={isForecastLoading}
         />
       )}
 

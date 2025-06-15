@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { City, CurrentWeather, WeatherStore } from '@/types/weather';
+import { City, CurrentWeather, WeatherStore, ForecastWeather } from '@/types/weather';
 
 export const useWeatherStore = create<WeatherStore>()(
   persist(
@@ -72,6 +72,34 @@ export const useWeatherStore = create<WeatherStore>()(
             ? {
                 ...city,
                 currentWeather: weather,
+                lastUpdated: new Date().toISOString()
+              }
+            : city
+        );
+
+        set({ defaultCities: updatedDefaultCities });
+      },
+
+      updateCityForecast: (cityId: string, forecast: ForecastWeather) => {
+        const { currentCity, defaultCities } = get();
+
+        // Update current city if it matches
+        if (currentCity && currentCity.id === cityId) {
+          set({
+            currentCity: {
+              ...currentCity,
+              forecast: forecast,
+              lastUpdated: new Date().toISOString()
+            }
+          });
+        }
+
+        // Update in default cities list
+        const updatedDefaultCities = defaultCities.map(city =>
+          city.id === cityId
+            ? {
+                ...city,
+                forecast: forecast,
                 lastUpdated: new Date().toISOString()
               }
             : city

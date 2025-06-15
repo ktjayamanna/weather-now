@@ -3,6 +3,7 @@
 import { X, Wind, Eye, Droplets, Sun, RefreshCw } from 'lucide-react';
 import { City } from '@/types/weather';
 import { WeatherIcon } from '@/components/WeatherIcon';
+import { HourlyForecast } from '@/components/HourlyForecast';
 import { formatLastUpdated, getTemperatureDisplay } from '@/lib/utils';
 import { useSettingsStore } from '@/store/settingsStore';
 import { Button } from '@/components/ui/button';
@@ -12,9 +13,10 @@ interface CityDetailsModalProps {
   onClose: () => void;
   onRefresh?: (cityId: string) => void;
   isRefreshing?: boolean;
+  isForecastLoading?: boolean;
 }
 
-export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = false }: CityDetailsModalProps) {
+export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = false, isForecastLoading = false }: CityDetailsModalProps) {
   const { settings } = useSettingsStore();
   const getWeatherGradient = (condition: string) => {
     const lowerCondition = condition.toLowerCase();
@@ -135,6 +137,18 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Hourly Forecast */}
+          <div className="mb-8">
+            <HourlyForecast
+              hourlyData={[
+                ...(city.forecast?.forecastday?.[0]?.hour || []),
+                ...(city.forecast?.forecastday?.[1]?.hour || [])
+              ]}
+              isLoading={isForecastLoading}
+              timezone={city.timezone}
+            />
           </div>
 
           {/* Weather Details Grid */}
