@@ -4,6 +4,7 @@ import { MapPin, Pin, PinOff } from 'lucide-react';
 import { City } from '@/types/weather';
 import { SearchBar } from '@/components/SearchBar';
 import { WeatherIcon } from '@/components/WeatherIcon';
+import { formatLastUpdatedShort } from '@/lib/utils';
 
 interface HomeScreenProps {
   cities: City[];
@@ -11,9 +12,11 @@ interface HomeScreenProps {
   onCityClick: (city: City) => void;
   onRemoveCity: (cityId: string) => void;
   isLoading?: boolean;
+  clearSearchInput?: boolean;
+  onClearComplete?: () => void;
 }
 
-export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, isLoading }: HomeScreenProps) {
+export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, isLoading, clearSearchInput, onClearComplete }: HomeScreenProps) {
   const getWeatherGradient = (condition: string) => {
     const lowerCondition = condition.toLowerCase();
     if (lowerCondition.includes('sunny') || lowerCondition.includes('clear')) {
@@ -53,6 +56,8 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, isLoad
           isLoading={isLoading}
           placeholder="Search for a city or airport"
           className="mb-8 max-w-md mx-auto"
+          clearInput={clearSearchInput}
+          onClearComplete={onClearComplete}
         />
 
         <div className="relative">
@@ -101,6 +106,11 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, isLoad
                         <p className="text-white/90 text-xs md:text-sm truncate">
                           {city.currentWeather?.condition?.text || 'Loading...'}
                         </p>
+                        {city.lastUpdated && (
+                          <p className="text-white/60 text-xs mt-1">
+                            Updated {formatLastUpdatedShort(city.lastUpdated)}
+                          </p>
+                        )}
                       </div>
                       <div className="text-right flex flex-col items-end">
                         <div className="flex items-center space-x-1 md:space-x-2 mb-1">

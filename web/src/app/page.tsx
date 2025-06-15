@@ -15,6 +15,7 @@ export default function Home() {
   const [showCityDetails, setShowCityDetails] = useState(false);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [clearSearchInput, setClearSearchInput] = useState(false);
 
   const {
     defaultCities,
@@ -80,6 +81,7 @@ export default function Home() {
     setError(null);
     setSearchQuery(city);
     setShowSearchModal(true);
+    setClearSearchInput(true);
   };
 
   const handleCityClick = (city: City) => {
@@ -97,6 +99,10 @@ export default function Home() {
     setShowSearchModal(false);
     setSelectedCity(null);
     setSearchQuery('');
+  };
+
+  const handleClearComplete = () => {
+    setClearSearchInput(false);
   };
 
   const handleCloseCityDetails = () => {
@@ -121,6 +127,8 @@ export default function Home() {
         onCityClick={handleCityClick}
         onRemoveCity={handleRemoveCity}
         isLoading={isSearchLoading && searchQuery === 'Colombo, Sri Lanka'}
+        clearSearchInput={clearSearchInput}
+        onClearComplete={handleClearComplete}
       />
 
       {showSearchModal && (

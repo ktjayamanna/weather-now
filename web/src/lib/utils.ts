@@ -95,3 +95,58 @@ export function getWeatherIconType(condition: string): {
   // Default fallback
   return { icon: Cloud, color: 'text-gray-300' };
 }
+
+export function formatLastUpdated(lastUpdated: string): string {
+  const date = new Date(lastUpdated);
+
+  // Format date and time using user's local timezone
+  const dateStr = date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+
+  const timeStr = date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+
+  // Get user's local timezone abbreviation
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  let timezoneStr = '';
+
+  try {
+    const tzAbbr = Intl.DateTimeFormat('en-US', {
+      timeZone: userTimezone,
+      timeZoneName: 'short'
+    }).formatToParts(new Date()).find(part => part.type === 'timeZoneName')?.value;
+
+    if (tzAbbr) {
+      timezoneStr = ` ${tzAbbr}`;
+    }
+  } catch {
+    // Fallback if timezone detection fails
+    timezoneStr = '';
+  }
+
+  return `${dateStr} at ${timeStr}${timezoneStr}`;
+}
+
+export function formatLastUpdatedShort(lastUpdated: string): string {
+  const date = new Date(lastUpdated);
+  const now = new Date();
+  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+
+  if (diffInMinutes < 1) {
+    return 'Just now';
+  } else if (diffInMinutes < 60) {
+    return `${diffInMinutes}m ago`;
+  } else if (diffInMinutes < 1440) { // Less than 24 hours
+    const hours = Math.floor(diffInMinutes / 60);
+    return `${hours}h ago`;
+  } else {
+    const days = Math.floor(diffInMinutes / 1440);
+    return `${days}d ago`;
+  }
+}

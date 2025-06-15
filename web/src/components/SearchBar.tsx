@@ -14,13 +14,17 @@ interface SearchBarProps {
   isLoading?: boolean;
   className?: string;
   placeholder?: string;
+  clearInput?: boolean;
+  onClearComplete?: () => void;
 }
 
 export function SearchBar({
   onSearch,
   isLoading = false,
   className,
-  placeholder = "Search for a city..."
+  placeholder = "Search for a city...",
+  clearInput = false,
+  onClearComplete
 }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -53,6 +57,16 @@ export function SearchBar({
     setShowSuggestions(suggestions.length > 0 && query.length >= 2);
     setSelectedIndex(-1);
   }, [suggestions, query]);
+
+  // Clear input when clearInput prop is true
+  useEffect(() => {
+    if (clearInput) {
+      setQuery('');
+      setShowSuggestions(false);
+      setSelectedIndex(-1);
+      onClearComplete?.();
+    }
+  }, [clearInput, onClearComplete]);
 
   // Handle click outside to close suggestions
   useEffect(() => {

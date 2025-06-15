@@ -3,6 +3,7 @@
 import { X, Wind, Eye, Droplets, Sun } from 'lucide-react';
 import { City } from '@/types/weather';
 import { WeatherIcon } from '@/components/WeatherIcon';
+import { formatLastUpdated } from '@/lib/utils';
 
 interface CityDetailsModalProps {
   city: City;
@@ -34,13 +35,7 @@ export function CityDetailsModal({ city, onClose }: CityDetailsModalProps) {
     return 'Night';
   };
 
-  const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
-  };
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -72,9 +67,11 @@ export function CityDetailsModal({ city, onClose }: CityDetailsModalProps) {
               {city.region && city.region !== city.name ? `${city.region}, ` : ''}
               {city.country}
             </p>
-            <p className="text-white/60 text-xs mt-1">
-              Last updated: {formatTime(city.lastUpdated)}
-            </p>
+            {city.lastUpdated && (
+              <p className="text-white/60 text-xs mt-1">
+                Last updated: {formatLastUpdated(city.lastUpdated)}
+              </p>
+            )}
           </div>
 
           {/* Temperature */}
