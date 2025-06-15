@@ -3,6 +3,7 @@
 import { MapPin, Pin, PinOff } from 'lucide-react';
 import { City } from '@/types/weather';
 import { SearchBar } from '@/components/SearchBar';
+import { WeatherIcon } from '@/components/WeatherIcon';
 
 interface HomeScreenProps {
   cities: City[];
@@ -100,9 +101,19 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, isLoad
                           {city.currentWeather?.condition?.text || 'Loading...'}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <div className="text-white text-3xl font-light mb-1">
-                          {city.currentWeather?.temp_c ? `${Math.round(city.currentWeather.temp_c)}°` : '--°'}
+                      <div className="text-right flex flex-col items-end">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <div className="text-white text-3xl font-light">
+                            {city.currentWeather?.temp_c ? `${Math.round(city.currentWeather.temp_c)}°` : '--°'}
+                          </div>
+                          {city.currentWeather?.condition?.text && (
+                            <div className="opacity-80">
+                              <WeatherIcon
+                                condition={city.currentWeather.condition.text}
+                                size="h-8 w-8"
+                              />
+                            </div>
+                          )}
                         </div>
                         <div className="text-white/80 text-sm">
                           H:{city.currentWeather?.temp_c ? `${Math.round(city.currentWeather.temp_c + 5)}°` : '--°'} L:{city.currentWeather?.temp_c ? `${Math.round(city.currentWeather.temp_c - 8)}°` : '--°'}

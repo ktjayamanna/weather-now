@@ -1,10 +1,11 @@
 'use client';
 
-import { Cloud, Sun, CloudRain, Wind, Droplets, Eye, Thermometer, Plus } from 'lucide-react';
+import { Wind, Droplets, Eye, Thermometer, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { City } from '@/types/weather';
 import { formatTemperature, getWeatherGradient } from '@/lib/utils';
 import { cn } from '@/lib/utils';
+import { WeatherIcon } from '@/components/WeatherIcon';
 
 interface WeatherDisplayProps {
   city: City;
@@ -13,17 +14,7 @@ interface WeatherDisplayProps {
   className?: string;
 }
 
-function getWeatherIcon(condition: string) {
-  const lowerCondition = condition.toLowerCase();
-  
-  if (lowerCondition.includes('sunny') || lowerCondition.includes('clear')) {
-    return <Sun className="h-16 w-16 text-yellow-300" />;
-  } else if (lowerCondition.includes('rain') || lowerCondition.includes('drizzle')) {
-    return <CloudRain className="h-16 w-16 text-blue-300" />;
-  }
-  
-  return <Cloud className="h-16 w-16 text-gray-300" />;
-}
+
 
 export function WeatherDisplay({ 
   city, 
@@ -78,7 +69,7 @@ export function WeatherDisplay({
 
         {/* Weather condition */}
         <div className="flex flex-col items-center space-y-2">
-          {getWeatherIcon(currentWeather.condition.text)}
+          <WeatherIcon condition={currentWeather.condition.text} />
           <p className="text-xl font-light">
             {currentWeather.condition.text}
           </p>
