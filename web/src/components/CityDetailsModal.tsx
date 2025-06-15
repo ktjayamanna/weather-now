@@ -1,6 +1,6 @@
 'use client';
 
-import { X, Wind, Eye, Droplets, Sun, RefreshCw } from 'lucide-react';
+import { X, Wind, Eye, Droplets, Sun, RefreshCw, Cloud } from 'lucide-react';
 import { City } from '@/types/weather';
 import { WeatherIcon } from '@/components/WeatherIcon';
 import { HourlyForecast } from '@/components/HourlyForecast';
@@ -53,9 +53,9 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
       />
       
       {/* Modal */}
-      <div className={`relative w-full max-w-sm rounded-3xl overflow-hidden bg-gradient-to-br ${
+      <div className={`relative w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl rounded-3xl overflow-hidden bg-gradient-to-br ${
         getWeatherGradient(city.currentWeather?.condition?.text || 'clear')
-      } shadow-2xl transform transition-all duration-300 max-h-[90vh] overflow-y-auto`}>
+      } shadow-2xl transform transition-all duration-300 max-h-[95vh] sm:max-h-[90vh] lg:max-h-[80vh] xl:max-h-[75vh] 2xl:max-h-[70vh] overflow-y-auto scrollbar-custom`}>
         
         {/* Close Button */}
         <button
@@ -77,43 +77,44 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
         )}
 
         {/* Content */}
-        <div className="p-8 pt-12">
+        <div className="p-4 sm:p-6 lg:p-8 pt-8 sm:pt-10 lg:pt-12">
           {/* Location */}
-          <div className="text-center text-white mb-8">
-            <h2 className="text-2xl font-light mb-1">{city.name}</h2>
-            <p className="text-white/80 text-sm">
+          <div className="text-center text-white mb-3 sm:mb-4 lg:mb-6">
+            <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-light mb-1">{city.name}</h2>
+            <p className="text-white/80 text-xs sm:text-sm">
               {city.region && city.region !== city.name ? `${city.region}, ` : ''}
               {city.country}
             </p>
             {city.lastUpdated && (
-              <p className="text-white/60 text-xs mt-1">
+              <p className="text-white/60 text-xs mt-1 hidden lg:block">
                 Last updated: {formatLastUpdated(city.lastUpdated)}
               </p>
             )}
           </div>
 
           {/* Temperature */}
-          <div className="text-center text-white mb-8">
-            <div className="text-7xl font-thin mb-4">
+          <div className="text-center text-white mb-3 sm:mb-4 lg:mb-6">
+            <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-thin mb-1 sm:mb-2 lg:mb-3">
               {city.currentWeather ?
                 getTemperatureDisplay(city.currentWeather.temp_c, city.currentWeather.temp_f, settings.temperatureUnit)
                 : '--°'
               }
             </div>
-            <div className="flex items-center justify-center space-x-3 mb-2">
-              <p className="text-white/90 text-xl">
+            <div className="flex items-center justify-center space-x-2 sm:space-x-3 mb-1">
+              <p className="text-white/90 text-base sm:text-lg lg:text-xl">
                 {city.currentWeather?.condition?.text || 'Loading...'}
               </p>
               {city.currentWeather?.condition?.text && (
                 <div className="opacity-90">
                   <WeatherIcon
                     condition={city.currentWeather.condition.text}
-                    size="h-6 w-6"
+                    size="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6"
                   />
                 </div>
               )}
             </div>
-            <p className="text-white/80 text-sm">
+            {/* Feels like - hide on small/medium screens */}
+            <p className="text-white/80 text-xs sm:text-sm hidden lg:block">
               {getTimeOfDay()} • Feels like {city.currentWeather ?
                 getTemperatureDisplay(city.currentWeather.feelslike_c, city.currentWeather.feelslike_f, settings.temperatureUnit)
                 : '--°'
@@ -121,26 +122,26 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
             </p>
           </div>
 
-          {/* High/Low */}
-          <div className="text-center text-white mb-8">
-            <div className="flex justify-center space-x-8">
+          {/* High/Low - show on medium screens and up */}
+          <div className="text-center text-white mb-3 sm:mb-4 lg:mb-5 hidden md:block">
+            <div className="flex justify-center space-x-6 sm:space-x-8">
               <div>
-                <p className="text-white/70 text-sm">High</p>
-                <p className="text-white text-lg font-medium">
+                <p className="text-white/70 text-xs sm:text-sm">High</p>
+                <p className="text-white text-sm sm:text-base lg:text-lg font-medium">
                   {city.currentWeather?.temp_c ? `${Math.round(city.currentWeather.temp_c + 5)}°` : '--°'}
                 </p>
               </div>
               <div>
-                <p className="text-white/70 text-sm">Low</p>
-                <p className="text-white text-lg font-medium">
+                <p className="text-white/70 text-xs sm:text-sm">Low</p>
+                <p className="text-white text-sm sm:text-base lg:text-lg font-medium">
                   {city.currentWeather?.temp_c ? `${Math.round(city.currentWeather.temp_c - 8)}°` : '--°'}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Hourly Forecast */}
-          <div className="mb-8">
+          {/* Hourly Forecast - show on small screens and up */}
+          <div className="mb-3 sm:mb-4 lg:mb-5 hidden sm:block">
             <HourlyForecast
               hourlyData={[
                 ...(city.forecast?.forecastday?.[0]?.hour || []),
@@ -151,70 +152,89 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
             />
           </div>
 
-          {/* Weather Details Grid */}
-          <div className="space-y-4 mb-6">
-            <div className="bg-white/20 backdrop-blur-md rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Droplets className="w-5 h-5 text-white/70" />
-                  <span className="text-white/70 text-sm">Humidity</span>
-                </div>
-                <span className="text-white text-lg font-medium">
-                  {city.currentWeather?.humidity || '--'}%
-                </span>
-              </div>
-            </div>
-
-            <div className="bg-white/20 backdrop-blur-md rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Wind className="w-5 h-5 text-white/70" />
-                  <span className="text-white/70 text-sm">Wind</span>
-                </div>
-                <div className="text-right">
-                  <div className="text-white text-lg font-medium">
-                    {city.currentWeather?.wind_kph ? `${Math.round(city.currentWeather.wind_kph)} km/h` : '-- km/h'}
+          {/* Weather Details Grid - Responsive multi-column layout */}
+          <div className="mb-3 sm:mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+              {/* Priority 1: Humidity - Always visible */}
+              <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 sm:p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <Droplets className="w-4 h-4 sm:w-5 sm:h-5 text-white/70" />
+                    <span className="text-white/70 text-xs sm:text-sm">Humidity</span>
                   </div>
-                  <div className="text-white/70 text-xs">
-                    {city.currentWeather?.wind_dir || '--'}
+                  <span className="text-white text-sm sm:text-base lg:text-lg font-medium">
+                    {city.currentWeather?.humidity || '--'}%
+                  </span>
+                </div>
+              </div>
+
+              {/* Priority 2: Wind Speed - Always visible */}
+              <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 sm:p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <Wind className="w-4 h-4 sm:w-5 sm:h-5 text-white/70" />
+                    <span className="text-white/70 text-xs sm:text-sm">Wind</span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-white text-sm sm:text-base lg:text-lg font-medium">
+                      {city.currentWeather?.wind_kph ? `${Math.round(city.currentWeather.wind_kph)} km/h` : '-- km/h'}
+                    </div>
+                    <div className="text-white/70 text-xs hidden lg:block">
+                      {city.currentWeather?.wind_dir || '--'}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-white/20 backdrop-blur-md rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Eye className="w-5 h-5 text-white/70" />
-                  <span className="text-white/70 text-sm">Visibility</span>
+              {/* Priority 3: UV Index - Always visible */}
+              <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 sm:p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-white/70" />
+                    <span className="text-white/70 text-xs sm:text-sm">UV Index</span>
+                  </div>
+                  <span className="text-white text-sm sm:text-base lg:text-lg font-medium">
+                    {city.currentWeather?.uv || '--'}
+                  </span>
                 </div>
-                <span className="text-white text-lg font-medium">
-                  {city.currentWeather?.vis_km ? `${city.currentWeather.vis_km} km` : '-- km'}
-                </span>
               </div>
-            </div>
 
-            <div className="bg-white/20 backdrop-blur-md rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Sun className="w-5 h-5 text-white/70" />
-                  <span className="text-white/70 text-sm">UV Index</span>
+              {/* Secondary metrics - show on small screens and up */}
+              <div className="hidden sm:block bg-white/20 backdrop-blur-md rounded-xl p-3 sm:p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-white/70" />
+                    <span className="text-white/70 text-xs sm:text-sm">Visibility</span>
+                  </div>
+                  <span className="text-white text-sm sm:text-base lg:text-lg font-medium">
+                    {city.currentWeather?.vis_km ? `${city.currentWeather.vis_km} km` : '-- km'}
+                  </span>
                 </div>
-                <span className="text-white text-lg font-medium">
-                  {city.currentWeather?.uv || '--'}
-                </span>
               </div>
-            </div>
 
-            <div className="bg-white/20 backdrop-blur-md rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-5 h-5 rounded-full bg-white/70"></div>
-                  <span className="text-white/70 text-sm">Pressure</span>
+              <div className="hidden sm:block bg-white/20 backdrop-blur-md rounded-xl p-3 sm:p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white/70"></div>
+                    <span className="text-white/70 text-xs sm:text-sm">Pressure</span>
+                  </div>
+                  <span className="text-white text-sm sm:text-base lg:text-lg font-medium">
+                    {city.currentWeather?.pressure_mb ? `${city.currentWeather.pressure_mb} mb` : '-- mb'}
+                  </span>
                 </div>
-                <span className="text-white text-lg font-medium">
-                  {city.currentWeather?.pressure_mb ? `${city.currentWeather.pressure_mb} mb` : '-- mb'}
-                </span>
+              </div>
+
+              {/* Cloud Coverage - Complete the grid */}
+              <div className="hidden sm:block bg-white/20 backdrop-blur-md rounded-xl p-3 sm:p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <Cloud className="w-4 h-4 sm:w-5 sm:h-5 text-white/70" />
+                    <span className="text-white/70 text-xs sm:text-sm">Cloud Cover</span>
+                  </div>
+                  <span className="text-white text-sm sm:text-base lg:text-lg font-medium">
+                    {city.currentWeather?.cloud !== undefined ? `${city.currentWeather.cloud}%` : '--%'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

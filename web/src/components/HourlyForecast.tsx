@@ -159,7 +159,7 @@ export function HourlyForecast({ hourlyData, className = '', isLoading = false, 
           {displayHours.map((hour, index) => (
             <div
               key={hour.time_epoch}
-              className="flex flex-col items-center space-y-2 min-w-[55px] flex-shrink-0"
+              className="flex flex-col items-center space-y-1 sm:space-y-2 min-w-[45px] sm:min-w-[55px] flex-shrink-0"
             >
               {/* Time */}
               <div className="text-white/80 text-xs font-medium whitespace-nowrap">
@@ -170,12 +170,12 @@ export function HourlyForecast({ hourlyData, className = '', isLoading = false, 
               <div className="opacity-90">
                 <WeatherIcon
                   condition={hour.condition.text}
-                  size="h-8 w-8"
+                  size="h-6 w-6 sm:h-8 sm:w-8"
                 />
               </div>
 
               {/* Temperature */}
-              <div className="text-white text-sm font-medium">
+              <div className="text-white text-xs sm:text-sm font-medium">
                 {getTemperatureDisplay(hour.temp_c, hour.temp_f, settings.temperatureUnit)}
               </div>
 
