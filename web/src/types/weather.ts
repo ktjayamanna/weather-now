@@ -79,7 +79,9 @@ export interface WeatherStore {
   defaultCities: City[];
   isLoading: boolean;
   error: string | null;
-  
+  isRefreshing: boolean;
+  lastAutoUpdate: string | null;
+
   // Actions
   setCurrentCity: (city: City) => void;
   addDefaultCity: (city: City) => void;
@@ -87,4 +89,6 @@ export interface WeatherStore {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   updateCityWeather: (cityId: string, weather: CurrentWeather) => void;
+  setRefreshing: (refreshing: boolean) => void;
+  setLastAutoUpdate: (timestamp: string) => void;
 }

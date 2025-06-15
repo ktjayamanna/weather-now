@@ -3,6 +3,8 @@
 import { X, Plus } from 'lucide-react';
 import { City } from '@/types/weather';
 import { WeatherIcon } from '@/components/WeatherIcon';
+import { getTemperatureDisplay } from '@/lib/utils';
+import { useSettingsStore } from '@/store/settingsStore';
 
 interface SearchModalProps {
   city: City | null;
@@ -13,6 +15,7 @@ interface SearchModalProps {
 }
 
 export function SearchModal({ city, isLoading, error, onAddCity, onClose }: SearchModalProps) {
+  const { settings } = useSettingsStore();
   const getWeatherGradient = (condition: string) => {
     const lowerCondition = condition.toLowerCase();
     if (lowerCondition.includes('sunny') || lowerCondition.includes('clear')) {
@@ -86,7 +89,10 @@ export function SearchModal({ city, isLoading, error, onAddCity, onClose }: Sear
               {/* Temperature */}
               <div className="text-center text-white mb-8">
                 <div className="text-6xl font-thin mb-4">
-                  {city.currentWeather?.temp_c ? `${Math.round(city.currentWeather.temp_c)}°` : '--°'}
+                  {city.currentWeather ?
+                    getTemperatureDisplay(city.currentWeather.temp_c, city.currentWeather.temp_f, settings.temperatureUnit)
+                    : '--°'
+                  }
                 </div>
                 <div className="flex flex-col items-center space-y-2 mb-2">
                   {city.currentWeather?.condition?.text && (
@@ -102,7 +108,10 @@ export function SearchModal({ city, isLoading, error, onAddCity, onClose }: Sear
                   </p>
                 </div>
                 <p className="text-white/80 text-sm">
-                  {getTimeOfDay()} • Feels like {city.currentWeather?.feelslike_c ? `${Math.round(city.currentWeather.feelslike_c)}°` : '--°'}
+                  {getTimeOfDay()} • Feels like {city.currentWeather ?
+                    getTemperatureDisplay(city.currentWeather.feelslike_c, city.currentWeather.feelslike_f, settings.temperatureUnit)
+                    : '--°'
+                  }
                 </p>
               </div>
 

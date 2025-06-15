@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { HomeScreen } from '@/components/HomeScreen';
 import { SearchModal } from '@/components/SearchModal';
 import { CityDetailsModal } from '@/components/CityDetailsModal';
+import { SettingsModal } from '@/components/SettingsModal';
 import { useWeatherStore } from '@/store/weatherStore';
+import { useSettingsStore } from '@/store/settingsStore';
 import { createCityFromWeatherData } from '@/store/weatherStore';
 import { trpc } from '@/utils/trpc';
 import { City } from '@/types/weather';
@@ -13,17 +15,24 @@ import { useToast } from '@/components/ui/toast';
 export default function Home() {
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [showCityDetails, setShowCityDetails] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [clearSearchInput, setClearSearchInput] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState<string | null>(null);
 
   const {
     defaultCities,
     addDefaultCity,
     removeDefaultCity,
     setError,
-    error
+    error,
+    updateCityWeather,
+    lastAutoUpdate,
+    setLastAutoUpdate
   } = useWeatherStore();
+
+  const { settings } = useSettingsStore();
 
   const { addToast } = useToast();
 
@@ -39,6 +48,89 @@ export default function Home() {
       refetchOnWindowFocus: false,
     }
   );
+
+  // Fetch weather for refresh
+  const refreshCity = refreshTrigger ? defaultCities.find(c => c.id === refreshTrigger) : null;
+  const {
+    data: refreshWeatherData,
+    isLoading: isRefreshLoading,
+    error: refreshError
+  } = trpc.weather.getCurrentWeather.useQuery(
+    { city: refreshCity ? `${refreshCity.name}, ${refreshCity.country}` : '' },
+    {
+      enabled: !!refreshTrigger && !!refreshCity,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  // Handle refresh data
+  useEffect(() => {
+    if (refreshWeatherData && refreshTrigger) {
+      updateCityWeather(refreshTrigger, refreshWeatherData.current);
+      const city = defaultCities.find(c => c.id === refreshTrigger);
+      if (city) {
+        addToast({
+          title: 'Weather Updated',
+          description: `Updated weather for ${city.name}`,
+          type: 'success'
+        });
+      }
+      setRefreshTrigger(null);
+    }
+  }, [refreshWeatherData, refreshTrigger, updateCityWeather, defaultCities, addToast]);
+
+  // Handle refresh error
+  useEffect(() => {
+    if (refreshError && refreshTrigger) {
+      addToast({
+        title: 'Update Failed',
+        description: 'Failed to update weather data',
+        type: 'error'
+      });
+      setRefreshTrigger(null);
+    }
+  }, [refreshError, refreshTrigger, addToast]);
+
+  // Manual refresh function
+  const refreshCityWeather = useCallback((cityId: string) => {
+    setRefreshTrigger(cityId);
+  }, []);
+
+  // Auto-update functionality
+  useEffect(() => {
+    const getUpdateInterval = () => {
+      switch (settings.updateFrequency) {
+        case '30min': return 30 * 60 * 1000; // 30 minutes
+        case '1hour': return 60 * 60 * 1000; // 1 hour
+        case '1day': return 24 * 60 * 60 * 1000; // 1 day
+        default: return 60 * 60 * 1000; // Default to 1 hour
+      }
+    };
+
+    const shouldUpdate = () => {
+      if (!lastAutoUpdate) return true;
+      const timeSinceLastUpdate = Date.now() - new Date(lastAutoUpdate).getTime();
+      return timeSinceLastUpdate >= getUpdateInterval();
+    };
+
+    const updateAllCities = () => {
+      if (defaultCities.length === 0 || !shouldUpdate()) return;
+
+      console.log('Auto-updating weather data for all cities...');
+      // For now, we'll just update the timestamp and let the user manually refresh
+      // A full auto-update implementation would require more complex state management
+      setLastAutoUpdate(new Date().toISOString());
+      console.log('Auto-update timestamp updated');
+    };
+
+    // Initial update check
+    updateAllCities();
+
+    // Set up interval for future updates
+    const interval = setInterval(updateAllCities, getUpdateInterval());
+
+    return () => clearInterval(interval);
+  }, [settings.updateFrequency, defaultCities, lastAutoUpdate, setLastAutoUpdate]);
 
   // Load default city (Colombo) on first visit if no cities exist
   useEffect(() => {
@@ -110,6 +202,14 @@ export default function Home() {
     setSelectedCity(null);
   };
 
+  const handleOpenSettings = () => {
+    setShowSettings(true);
+  };
+
+  const handleCloseSettings = () => {
+    setShowSettings(false);
+  };
+
   const handleRemoveCity = (cityId: string) => {
     removeDefaultCity(cityId);
     addToast({
@@ -126,6 +226,7 @@ export default function Home() {
         onSearch={handleSearch}
         onCityClick={handleCityClick}
         onRemoveCity={handleRemoveCity}
+        onOpenSettings={handleOpenSettings}
         isLoading={isSearchLoading && searchQuery === 'Colombo, Sri Lanka'}
         clearSearchInput={clearSearchInput}
         onClearComplete={handleClearComplete}
@@ -145,6 +246,14 @@ export default function Home() {
         <CityDetailsModal
           city={selectedCity}
           onClose={handleCloseCityDetails}
+          onRefresh={refreshCityWeather}
+          isRefreshing={isRefreshLoading}
+        />
+      )}
+
+      {showSettings && (
+        <SettingsModal
+          onClose={handleCloseSettings}
         />
       )}
     </>

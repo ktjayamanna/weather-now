@@ -34,6 +34,25 @@ export function formatTemperature(temp: number, unit: 'C' | 'F' = 'C'): string {
   return `${Math.round(temp)}°${unit}`;
 }
 
+export function convertTemperature(tempC: number, targetUnit: 'celsius' | 'fahrenheit'): number {
+  if (targetUnit === 'fahrenheit') {
+    return (tempC * 9/5) + 32;
+  }
+  return tempC;
+}
+
+export function getTemperatureDisplay(tempC: number, tempF: number, unit: 'celsius' | 'fahrenheit'): string {
+  const temp = unit === 'celsius' ? tempC : tempF;
+  const unitSymbol = unit === 'celsius' ? 'C' : 'F';
+  return `${Math.round(temp)}°`;
+}
+
+export function getTemperatureWithUnit(tempC: number, tempF: number, unit: 'celsius' | 'fahrenheit'): string {
+  const temp = unit === 'celsius' ? tempC : tempF;
+  const unitSymbol = unit === 'celsius' ? 'C' : 'F';
+  return `${Math.round(temp)}°${unitSymbol}`;
+}
+
 export function getWeatherIconType(condition: string): {
   icon: typeof Cloud;
   color: string;

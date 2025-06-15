@@ -1,22 +1,26 @@
 'use client';
 
-import { MapPin, Pin, PinOff } from 'lucide-react';
+import { MapPin, Pin, PinOff, Settings } from 'lucide-react';
 import { City } from '@/types/weather';
 import { SearchBar } from '@/components/SearchBar';
 import { WeatherIcon } from '@/components/WeatherIcon';
-import { formatLastUpdatedShort } from '@/lib/utils';
+import { formatLastUpdatedShort, getTemperatureDisplay } from '@/lib/utils';
+import { useSettingsStore } from '@/store/settingsStore';
+import { Button } from '@/components/ui/button';
 
 interface HomeScreenProps {
   cities: City[];
   onSearch: (query: string) => void;
   onCityClick: (city: City) => void;
   onRemoveCity: (cityId: string) => void;
+  onOpenSettings: () => void;
   isLoading?: boolean;
   clearSearchInput?: boolean;
   onClearComplete?: () => void;
 }
 
-export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, isLoading, clearSearchInput, onClearComplete }: HomeScreenProps) {
+export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, onOpenSettings, isLoading, clearSearchInput, onClearComplete }: HomeScreenProps) {
+  const { settings } = useSettingsStore();
   const getWeatherGradient = (condition: string) => {
     const lowerCondition = condition.toLowerCase();
     if (lowerCondition.includes('sunny') || lowerCondition.includes('clear')) {
@@ -47,8 +51,16 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, isLoad
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-400 to-blue-600 px-4 py-8">
       <div className="max-w-md md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto">
-        <div className="text-center text-white mb-8">
+        <div className="relative text-center text-white mb-8">
           <h1 className="text-3xl font-light mb-2">Weather</h1>
+          <Button
+            onClick={onOpenSettings}
+            variant="ghost"
+            size="icon"
+            className="absolute top-0 right-0 text-white hover:bg-white/20"
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
         </div>
 
         <SearchBar
@@ -115,7 +127,10 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, isLoad
                       <div className="text-right flex flex-col items-end">
                         <div className="flex items-center space-x-1 md:space-x-2 mb-1">
                           <div className="text-white text-2xl md:text-3xl font-light">
-                            {city.currentWeather?.temp_c ? `${Math.round(city.currentWeather.temp_c)}°` : '--°'}
+                            {city.currentWeather ?
+                              getTemperatureDisplay(city.currentWeather.temp_c, city.currentWeather.temp_f, settings.temperatureUnit)
+                              : '--°'
+                            }
                           </div>
                           {city.currentWeather?.condition?.text && (
                             <div className="opacity-80">
@@ -127,7 +142,13 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, isLoad
                           )}
                         </div>
                         <div className="text-white/80 text-xs md:text-sm">
-                          H:{city.currentWeather?.temp_c ? `${Math.round(city.currentWeather.temp_c + 5)}°` : '--°'} L:{city.currentWeather?.temp_c ? `${Math.round(city.currentWeather.temp_c - 8)}°` : '--°'}
+                          {city.currentWeather ? (
+                            <>
+                              H:{getTemperatureDisplay(city.currentWeather.temp_c + 5, city.currentWeather.temp_f + 9, settings.temperatureUnit)} L:{getTemperatureDisplay(city.currentWeather.temp_c - 8, city.currentWeather.temp_f - 14, settings.temperatureUnit)}
+                            </>
+                          ) : (
+                            'H:--° L:--°'
+                          )}
                         </div>
                       </div>
                     </div>

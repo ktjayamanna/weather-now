@@ -9,6 +9,8 @@ export const useWeatherStore = create<WeatherStore>()(
       defaultCities: [],
       isLoading: false,
       error: null,
+      isRefreshing: false,
+      lastAutoUpdate: null,
 
       setCurrentCity: (city: City) => {
         set({ currentCity: city, error: null });
@@ -17,20 +19,20 @@ export const useWeatherStore = create<WeatherStore>()(
       addDefaultCity: (city: City) => {
         const { defaultCities } = get();
         const exists = defaultCities.some(c => c.id === city.id);
-        
+
         if (!exists) {
-          set({ 
+          set({
             defaultCities: [...defaultCities, city],
-            error: null 
+            error: null
           });
         }
       },
 
       removeDefaultCity: (cityId: string) => {
         const { defaultCities } = get();
-        set({ 
+        set({
           defaultCities: defaultCities.filter(city => city.id !== cityId),
-          error: null 
+          error: null
         });
       },
 
@@ -42,9 +44,17 @@ export const useWeatherStore = create<WeatherStore>()(
         set({ error, isLoading: false });
       },
 
+      setRefreshing: (refreshing: boolean) => {
+        set({ isRefreshing: refreshing });
+      },
+
+      setLastAutoUpdate: (timestamp: string) => {
+        set({ lastAutoUpdate: timestamp });
+      },
+
       updateCityWeather: (cityId: string, weather: CurrentWeather) => {
         const { currentCity, defaultCities } = get();
-        
+
         // Update current city if it matches
         if (currentCity && currentCity.id === cityId) {
           set({
@@ -57,10 +67,10 @@ export const useWeatherStore = create<WeatherStore>()(
         }
 
         // Update in default cities list
-        const updatedDefaultCities = defaultCities.map(city => 
-          city.id === cityId 
-            ? { 
-                ...city, 
+        const updatedDefaultCities = defaultCities.map(city =>
+          city.id === cityId
+            ? {
+                ...city,
                 currentWeather: weather,
                 lastUpdated: new Date().toISOString()
               }
