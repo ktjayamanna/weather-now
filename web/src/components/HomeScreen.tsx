@@ -43,7 +43,7 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, isLoad
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-400 to-blue-600 px-4 py-8">
-      <div className="max-w-md mx-auto">
+      <div className="max-w-md md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto">
         <div className="text-center text-white mb-8">
           <h1 className="text-3xl font-light mb-2">Weather</h1>
         </div>
@@ -52,7 +52,7 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, isLoad
           onSearch={onSearch}
           isLoading={isLoading}
           placeholder="Search for a city or airport"
-          className="mb-8"
+          className="mb-8 max-w-md mx-auto"
         />
 
         <div className="relative">
@@ -63,59 +63,60 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, isLoad
               <p className="text-sm opacity-70">Search for a city to get started</p>
             </div>
           ) : (
-            <div className="max-h-[60vh] overflow-y-auto scrollbar-custom space-y-4 pr-2">
-              {cities.map((city) => (
+            <div className="max-h-[70vh] overflow-y-auto scrollbar-custom">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 md:gap-6 p-2 pr-4">
+                {cities.map((city) => (
                 <div
                   key={city.id}
                   className={`city-card relative overflow-hidden rounded-2xl bg-gradient-to-r ${getWeatherGradient(
                     city.currentWeather?.condition?.text || 'clear'
-                  )} p-6 animate-slide-in group`}
+                  )} p-4 md:p-5 lg:p-6 animate-slide-in group`}
                 >
                   <div
                     onClick={() => onCityClick(city)}
                     className="cursor-pointer relative z-10"
                   >
                     <div className="flex justify-between items-start">
-                      <div className="flex-1 pr-4">
+                      <div className="flex-1 pr-3 md:pr-4">
                         <div className="flex items-center space-x-2 mb-1">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               onRemoveCity(city.id);
                             }}
-                            className="group/pin w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 hover:backdrop-blur-sm transition-all duration-200 hover:scale-110"
+                            className="group/pin w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center hover:bg-white/10 hover:backdrop-blur-sm transition-all duration-200 hover:scale-110"
                             title="Unpin city"
                           >
-                            <Pin className="w-4 h-4 text-white/70 group-hover/pin:hidden transition-all duration-200" />
-                            <PinOff className="w-4 h-4 text-white/50 hidden group-hover/pin:block transition-all duration-200" />
+                            <Pin className="w-3 h-3 md:w-4 md:h-4 text-white/70 group-hover/pin:hidden transition-all duration-200" />
+                            <PinOff className="w-3 h-3 md:w-4 md:h-4 text-white/50 hidden group-hover/pin:block transition-all duration-200" />
                           </button>
-                          <h3 className="text-white text-xl font-medium">
+                          <h3 className="text-white text-lg md:text-xl font-medium truncate">
                             {city.name}
                           </h3>
                         </div>
-                        <p className="text-white/80 text-sm mb-2">
+                        <p className="text-white/80 text-xs md:text-sm mb-1 md:mb-2 truncate">
                           {city.region && city.region !== city.name ? `${city.region}, ` : ''}
                           {city.country}
                         </p>
-                        <p className="text-white/90 text-sm">
+                        <p className="text-white/90 text-xs md:text-sm truncate">
                           {city.currentWeather?.condition?.text || 'Loading...'}
                         </p>
                       </div>
                       <div className="text-right flex flex-col items-end">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <div className="text-white text-3xl font-light">
+                        <div className="flex items-center space-x-1 md:space-x-2 mb-1">
+                          <div className="text-white text-2xl md:text-3xl font-light">
                             {city.currentWeather?.temp_c ? `${Math.round(city.currentWeather.temp_c)}°` : '--°'}
                           </div>
                           {city.currentWeather?.condition?.text && (
                             <div className="opacity-80">
                               <WeatherIcon
                                 condition={city.currentWeather.condition.text}
-                                size="h-8 w-8"
+                                size="h-6 w-6 md:h-8 md:w-8"
                               />
                             </div>
                           )}
                         </div>
-                        <div className="text-white/80 text-sm">
+                        <div className="text-white/80 text-xs md:text-sm">
                           H:{city.currentWeather?.temp_c ? `${Math.round(city.currentWeather.temp_c + 5)}°` : '--°'} L:{city.currentWeather?.temp_c ? `${Math.round(city.currentWeather.temp_c - 8)}°` : '--°'}
                         </div>
                       </div>
@@ -124,7 +125,8 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, isLoad
                   
                   <div className="absolute inset-0 bg-black/10"></div>
                 </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>

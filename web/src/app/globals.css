@@ -125,9 +125,38 @@ body {
 /* Smooth transitions for city cards */
 .city-card {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center center; /* Scale from center to maintain position */
 }
 
+/* Mobile hover - very minimal scale to prevent any overflow */
 .city-card:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-3px) scale(1.005);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.06);
+}
+
+/* Tablet and desktop - slightly more scale but still very conservative */
+@media (min-width: 768px) {
+  .city-card:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+}
+
+/* Large desktop - can afford slightly more scale but still contained */
+@media (min-width: 1024px) {
+  .city-card:hover {
+    transform: translateY(-5px) scale(1.015);
+  }
+}
+
+/* Ensure proper aspect ratio for cards in grid */
+@media (min-width: 768px) {
+  .city-card {
+    min-height: 140px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .city-card {
+    min-height: 150px;
+  }
 }
