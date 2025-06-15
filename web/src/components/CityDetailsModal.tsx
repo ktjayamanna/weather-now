@@ -34,8 +34,15 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
     return 'from-blue-400 to-blue-600';
   };
 
-  const getTimeOfDay = () => {
-    const hour = new Date().getHours();
+  const getTimeOfDay = (cityTimezone?: string) => {
+    // Get current hour in the city's timezone
+    const now = new Date();
+    const hour = parseInt(now.toLocaleString('en-US', {
+      timeZone: cityTimezone || 'UTC',
+      hour: '2-digit',
+      hour12: false
+    }));
+
     if (hour >= 5 && hour < 12) return 'Morning';
     if (hour >= 12 && hour < 17) return 'Afternoon';
     if (hour >= 17 && hour < 21) return 'Evening';
@@ -115,7 +122,7 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
             </div>
             {/* Feels like - hide on small/medium screens */}
             <p className="text-white/80 text-xs sm:text-sm hidden lg:block">
-              {getTimeOfDay()} • Feels like {city.currentWeather ?
+              {getTimeOfDay(city.timezone)} • Feels like {city.currentWeather ?
                 getTemperatureDisplay(city.currentWeather.feelslike_c, city.currentWeather.feelslike_f, settings.temperatureUnit)
                 : '--°'
               }

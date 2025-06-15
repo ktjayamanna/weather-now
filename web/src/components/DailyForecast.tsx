@@ -12,26 +12,18 @@ interface DailyForecastProps {
   timezone?: string;
 }
 
-export function DailyForecast({ dailyData, className = '', isLoading = false }: DailyForecastProps) {
+export function DailyForecast({ dailyData, className = '', isLoading = false, timezone }: DailyForecastProps) {
   const { settings } = useSettingsStore();
 
-  const formatDayName = (dateString: string) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-
-    // Check if it's today
-    if (date.toDateString() === today.toDateString()) {
+  const formatDayName = (dateString: string, index: number, cityTimezone?: string) => {
+    // The first day in the forecast array should always be "Today" for that location
+    // WeatherAPI provides forecast data starting from the current day in the location's timezone
+    if (index === 0) {
       return 'Today';
     }
 
-    // Check if it's tomorrow
-    if (date.toDateString() === tomorrow.toDateString()) {
-      return 'Tomorrow';
-    }
-
-    // Return day name for other days
+    // For other days, format the day name
+    const date = new Date(dateString + 'T00:00:00');
     return date.toLocaleDateString('en-US', { weekday: 'short' });
   };
 
@@ -62,15 +54,15 @@ export function DailyForecast({ dailyData, className = '', isLoading = false }: 
     );
   }
 
-  // Just use all available forecast data from the free tier (maximize what we get)
+  // Use forecast data as-is since WeatherAPI provides it starting from today in the location's timezone
   const createCombinedData = () => {
     if (!dailyData || dailyData.length === 0) {
       return [];
     }
 
-    // Use all available days from the API (free tier gives us what it gives us)
-    // This will show Saturday, Today, Tomorrow, Tuesday, etc. - whatever the API provides
-    return dailyData;
+    // WeatherAPI already provides forecast starting from today in the location's timezone
+    // Just return all available days (up to 7 days)
+    return dailyData.slice(0, 7);
   };
 
   const displayDays = createCombinedData();
@@ -99,14 +91,14 @@ export function DailyForecast({ dailyData, className = '', isLoading = false }: 
       {/* Daily forecast - flex layout for better spacing */}
       <div className="bg-white/20 backdrop-blur-md rounded-xl p-4">
         <div className="flex justify-between items-start gap-2">
-          {displayDays.map((day) => (
+          {displayDays.map((day, index) => (
             <div
               key={day.date_epoch}
               className="flex flex-col items-center space-y-1 sm:space-y-2 flex-1 min-w-0"
             >
               {/* Day */}
               <div className="text-white/80 text-xs font-medium whitespace-nowrap">
-                {formatDayName(day.date)}
+                {formatDayName(day.date, index, timezone)}
               </div>
 
               {/* Weather Icon */}

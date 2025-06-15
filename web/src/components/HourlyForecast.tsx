@@ -55,17 +55,42 @@ export function HourlyForecast({ hourlyData, className = '', isLoading = false, 
 
   const formatTime = (timeString: string, cityTimezone?: string) => {
     const date = new Date(timeString);
-    const now = new Date();
 
-    // Check if it's the current hour (within the same hour and day)
-    if (date.getHours() === now.getHours() &&
-        date.getDate() === now.getDate() &&
-        date.getMonth() === now.getMonth() &&
-        date.getFullYear() === now.getFullYear()) {
+    // Get current time in the city's timezone
+    const nowInCityTz = new Date().toLocaleString('en-US', {
+      timeZone: cityTimezone || 'UTC',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+
+    const dateInCityTz = date.toLocaleString('en-US', {
+      timeZone: cityTimezone || 'UTC',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+
+    // Extract hour and date parts for comparison
+    const nowParts = nowInCityTz.split(', ');
+    const dateParts = dateInCityTz.split(', ');
+    const nowDate = nowParts[0];
+    const nowHour = nowParts[1].split(':')[0];
+    const dateDate = dateParts[0];
+    const dateHour = dateParts[1].split(':')[0];
+
+    // Check if it's the current hour in the city's timezone
+    if (nowDate === dateDate && nowHour === dateHour) {
       return 'Now';
     }
 
-    // Format as 12-hour time in the city's timezone if available
+    // Format as 12-hour time in the city's timezone
     const options: Intl.DateTimeFormatOptions = {
       hour: 'numeric',
       hour12: true,
