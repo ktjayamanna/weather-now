@@ -1,15 +1,16 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { AppSettings, SettingsStore, UpdateFrequency, TemperatureUnit } from '@/types/settings';
+import { AppSettings, SettingsStore, UpdateFrequency, TemperatureUnit, ForecastView } from '@/types/settings';
 
 const defaultSettings: AppSettings = {
   updateFrequency: '1hour',
   temperatureUnit: 'celsius',
+  forecastView: 'hourly',
 };
 
 export const useSettingsStore = create<SettingsStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       settings: defaultSettings,
 
       updateSettings: (newSettings: Partial<AppSettings>) => {
@@ -27,6 +28,12 @@ export const useSettingsStore = create<SettingsStore>()(
       setTemperatureUnit: (unit: TemperatureUnit) => {
         set((state) => ({
           settings: { ...state.settings, temperatureUnit: unit }
+        }));
+      },
+
+      setForecastView: (view: ForecastView) => {
+        set((state) => ({
+          settings: { ...state.settings, forecastView: view }
         }));
       },
     }),

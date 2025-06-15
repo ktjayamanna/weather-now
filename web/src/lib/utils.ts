@@ -43,7 +43,6 @@ export function convertTemperature(tempC: number, targetUnit: 'celsius' | 'fahre
 
 export function getTemperatureDisplay(tempC: number, tempF: number, unit: 'celsius' | 'fahrenheit'): string {
   const temp = unit === 'celsius' ? tempC : tempF;
-  const unitSymbol = unit === 'celsius' ? 'C' : 'F';
   return `${Math.round(temp)}°`;
 }
 

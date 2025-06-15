@@ -4,9 +4,9 @@ import { X, Wind, Eye, Droplets, Sun, RefreshCw, Cloud } from 'lucide-react';
 import { City } from '@/types/weather';
 import { WeatherIcon } from '@/components/WeatherIcon';
 import { HourlyForecast } from '@/components/HourlyForecast';
+import { DailyForecast } from '@/components/DailyForecast';
 import { formatLastUpdated, getTemperatureDisplay } from '@/lib/utils';
 import { useSettingsStore } from '@/store/settingsStore';
-import { Button } from '@/components/ui/button';
 
 interface CityDetailsModalProps {
   city: City;
@@ -17,7 +17,7 @@ interface CityDetailsModalProps {
 }
 
 export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = false, isForecastLoading = false }: CityDetailsModalProps) {
-  const { settings } = useSettingsStore();
+  const { settings, setForecastView } = useSettingsStore();
   const getWeatherGradient = (condition: string) => {
     const lowerCondition = condition.toLowerCase();
     if (lowerCondition.includes('sunny') || lowerCondition.includes('clear')) {
@@ -55,7 +55,7 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
       {/* Modal */}
       <div className={`relative w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl rounded-3xl overflow-hidden bg-gradient-to-br ${
         getWeatherGradient(city.currentWeather?.condition?.text || 'clear')
-      } shadow-2xl transform transition-all duration-300 max-h-[95vh] sm:max-h-[90vh] lg:max-h-[80vh] xl:max-h-[75vh] 2xl:max-h-[70vh] overflow-y-auto scrollbar-custom`}>
+      } shadow-2xl transform transition-all duration-300 max-h-[90vh] overflow-y-auto scrollbar-custom`}>
         
         {/* Close Button */}
         <button
@@ -77,9 +77,9 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
         )}
 
         {/* Content */}
-        <div className="p-4 sm:p-6 lg:p-8 pt-8 sm:pt-10 lg:pt-12">
+        <div className="p-4 sm:p-6 pt-8 sm:pt-10">
           {/* Location */}
-          <div className="text-center text-white mb-3 sm:mb-4 lg:mb-6">
+          <div className="text-center text-white mb-3 sm:mb-4">
             <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-light mb-1">{city.name}</h2>
             <p className="text-white/80 text-xs sm:text-sm">
               {city.region && city.region !== city.name ? `${city.region}, ` : ''}
@@ -93,7 +93,7 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
           </div>
 
           {/* Temperature */}
-          <div className="text-center text-white mb-3 sm:mb-4 lg:mb-6">
+          <div className="text-center text-white mb-3 sm:mb-4">
             <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-thin mb-1 sm:mb-2 lg:mb-3">
               {city.currentWeather ?
                 getTemperatureDisplay(city.currentWeather.temp_c, city.currentWeather.temp_f, settings.temperatureUnit)
@@ -123,7 +123,7 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
           </div>
 
           {/* High/Low - show on medium screens and up */}
-          <div className="text-center text-white mb-3 sm:mb-4 lg:mb-5 hidden md:block">
+          <div className="text-center text-white mb-3 sm:mb-4 hidden md:block">
             <div className="flex justify-center space-x-6 sm:space-x-8">
               <div>
                 <p className="text-white/70 text-xs sm:text-sm">High</p>
@@ -140,16 +140,51 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
             </div>
           </div>
 
-          {/* Hourly Forecast - show on small screens and up */}
-          <div className="mb-3 sm:mb-4 lg:mb-5 hidden sm:block">
-            <HourlyForecast
-              hourlyData={[
-                ...(city.forecast?.forecastday?.[0]?.hour || []),
-                ...(city.forecast?.forecastday?.[1]?.hour || [])
-              ]}
-              isLoading={isForecastLoading}
-              timezone={city.timezone}
-            />
+          {/* Forecast Toggle - show on small screens and up */}
+          <div className="mb-3 sm:mb-4 hidden sm:block">
+            {/* Toggle Buttons */}
+            <div className="flex justify-center mb-4">
+              <div className="bg-white/20 backdrop-blur-md rounded-lg p-1 flex">
+                <button
+                  onClick={() => setForecastView('hourly')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    settings.forecastView === 'hourly'
+                      ? 'bg-white/30 text-white shadow-sm'
+                      : 'text-white/70 hover:text-white/90'
+                  }`}
+                >
+                  Hourly
+                </button>
+                <button
+                  onClick={() => setForecastView('daily')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    settings.forecastView === 'daily'
+                      ? 'bg-white/30 text-white shadow-sm'
+                      : 'text-white/70 hover:text-white/90'
+                  }`}
+                >
+                  Daily
+                </button>
+              </div>
+            </div>
+
+            {/* Conditional Forecast Display */}
+            {settings.forecastView === 'hourly' ? (
+              <HourlyForecast
+                hourlyData={[
+                  ...(city.forecast?.forecastday?.[0]?.hour || []),
+                  ...(city.forecast?.forecastday?.[1]?.hour || [])
+                ]}
+                isLoading={isForecastLoading}
+                timezone={city.timezone}
+              />
+            ) : (
+              <DailyForecast
+                dailyData={city.forecast?.forecastday || []}
+                isLoading={isForecastLoading}
+                timezone={city.timezone}
+              />
+            )}
           </div>
 
           {/* Weather Details Grid - Responsive multi-column layout */}

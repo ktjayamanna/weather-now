@@ -45,7 +45,7 @@ export const weatherRouter = createTRPCRouter({
     .input(
       z.object({
         city: z.string().min(1, 'City name is required'),
-        days: z.number().min(1).max(14).default(1),
+        days: z.number().min(1).max(14).default(7),
       })
     )
     .query(async ({ input }) => {

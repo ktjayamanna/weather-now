@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { City, CurrentWeather, WeatherStore, ForecastWeather } from '@/types/weather';
+import { City, CurrentWeather, WeatherStore, ForecastWeather, Location } from '@/types/weather';
 
 export const useWeatherStore = create<WeatherStore>()(
   persist(
@@ -121,7 +121,7 @@ export const useWeatherStore = create<WeatherStore>()(
 // Helper function to create a City object from weather API response
 export const createCityFromWeatherData = (
   name: string,
-  weatherData: any
+  weatherData: { location: Location; current: CurrentWeather }
 ): City => {
   const { location, current } = weatherData;
   

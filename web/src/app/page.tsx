@@ -173,12 +173,11 @@ export default function Home() {
   // Fetch forecast for selected city when modal opens
   const {
     data: forecastData,
-    isLoading: isForecastLoading,
-    error: forecastError
+    isLoading: isForecastLoading
   } = trpc.weather.getForecast.useQuery(
     {
       city: selectedCity ? `${selectedCity.name}, ${selectedCity.country}` : '',
-      days: 2
+      days: 10  // Try 10 days to maximize free tier usage
     },
     {
       enabled: !!selectedCity && showCityDetails,
@@ -191,7 +190,7 @@ export default function Home() {
     if (forecastData && selectedCity) {
       updateCityForecast(selectedCity.id, forecastData.forecast);
     }
-  }, [forecastData, selectedCity?.id, updateCityForecast]);
+  }, [forecastData, selectedCity, updateCityForecast]);
 
   const handleSearch = (city: string) => {
     setError(null);

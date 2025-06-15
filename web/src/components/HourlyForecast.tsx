@@ -156,7 +156,7 @@ export function HourlyForecast({ hourlyData, className = '', isLoading = false, 
           ref={scrollContainerRef}
           className="flex space-x-3 overflow-x-auto scrollbar-hide hourly-scroll pb-2 px-1"
         >
-          {displayHours.map((hour, index) => (
+          {displayHours.map((hour) => (
             <div
               key={hour.time_epoch}
               className="flex flex-col items-center space-y-1 sm:space-y-2 min-w-[45px] sm:min-w-[55px] flex-shrink-0"
