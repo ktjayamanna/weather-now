@@ -4,7 +4,7 @@ import { X, Plus } from 'lucide-react';
 import { City } from '@/types/weather';
 import { WeatherIcon } from '@/components/WeatherIcon';
 import { getTemperatureDisplay } from '@/lib/utils';
-import { useSettingsStore } from '@/store/settingsStore';
+import { useAppStore } from '@/store';
 
 interface SearchModalProps {
   city: City | null;
@@ -15,7 +15,7 @@ interface SearchModalProps {
 }
 
 export function SearchModal({ city, isLoading, error, onAddCity, onClose }: SearchModalProps) {
-  const { settings } = useSettingsStore();
+  const { settings } = useAppStore();
   const getWeatherGradient = (condition: string) => {
     const lowerCondition = condition.toLowerCase();
     if (lowerCondition.includes('sunny') || lowerCondition.includes('clear')) {

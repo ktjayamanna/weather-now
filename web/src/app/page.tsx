@@ -5,9 +5,7 @@ import { HomeScreen } from '@/components/HomeScreen';
 import { SearchModal } from '@/components/SearchModal';
 import { CityDetailsModal } from '@/components/CityDetailsModal';
 import { SettingsModal } from '@/components/SettingsModal';
-import { useWeatherStore } from '@/store/weatherStore';
-import { useSettingsStore } from '@/store/settingsStore';
-import { createCityFromWeatherData } from '@/store/weatherStore';
+import { useAppStore, createCityFromWeatherData } from '@/store';
 import { trpc } from '@/utils/trpc';
 import { City } from '@/types/weather';
 import { useToast } from '@/components/ui/toast';
@@ -21,6 +19,7 @@ export default function Home() {
   const [clearSearchInput, setClearSearchInput] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState<string | null>(null);
 
+  const store = useAppStore();
   const {
     defaultCities,
     addDefaultCity,
@@ -30,10 +29,9 @@ export default function Home() {
     updateCityWeather,
     updateCityForecast,
     lastAutoUpdate,
-    setLastAutoUpdate
-  } = useWeatherStore();
-
-  const { settings } = useSettingsStore();
+    setLastAutoUpdate,
+    settings
+  } = store;
 
   const { addToast } = useToast();
   const utils = trpc.useUtils();

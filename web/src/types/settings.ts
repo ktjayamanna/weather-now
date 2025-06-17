@@ -8,10 +8,4 @@ export interface AppSettings {
   forecastView: ForecastView;
 }
 
-export interface SettingsStore {
-  settings: AppSettings;
-  updateSettings: (settings: Partial<AppSettings>) => void;
-  setUpdateFrequency: (frequency: UpdateFrequency) => void;
-  setTemperatureUnit: (unit: TemperatureUnit) => void;
-  setForecastView: (view: ForecastView) => void;
-}
+

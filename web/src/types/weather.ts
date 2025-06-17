@@ -158,22 +158,4 @@ export interface City {
   lastUpdated?: string;
 }
 
-export interface WeatherStore {
-  currentCity: City | null;
-  defaultCities: City[];
-  isLoading: boolean;
-  error: string | null;
-  isRefreshing: boolean;
-  lastAutoUpdate: string | null;
 
-  // Actions
-  setCurrentCity: (city: City) => void;
-  addDefaultCity: (city: City) => void;
-  removeDefaultCity: (cityId: string) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  updateCityWeather: (cityId: string, weather: CurrentWeather) => void;
-  updateCityForecast: (cityId: string, forecast: ForecastWeather) => void;
-  setRefreshing: (refreshing: boolean) => void;
-  setLastAutoUpdate: (timestamp: string) => void;
-}

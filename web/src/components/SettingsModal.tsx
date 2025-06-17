@@ -2,7 +2,7 @@
 
 import { X, Clock, Thermometer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useSettingsStore } from '@/store/settingsStore';
+import { useAppStore } from '@/store';
 import { UpdateFrequency, TemperatureUnit } from '@/types/settings';
 
 interface SettingsModalProps {
@@ -10,7 +10,7 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ onClose }: SettingsModalProps) {
-  const { settings, setUpdateFrequency, setTemperatureUnit } = useSettingsStore();
+  const { settings, setUpdateFrequency, setTemperatureUnit } = useAppStore();
 
   const updateFrequencyOptions: { value: UpdateFrequency; label: string }[] = [
     { value: '30min', label: 'Every 30 minutes' },

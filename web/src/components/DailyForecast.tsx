@@ -3,7 +3,7 @@
 import { DayWeather } from '@/types/weather';
 import { WeatherIcon } from '@/components/WeatherIcon';
 import { getTemperatureDisplay } from '@/lib/utils';
-import { useSettingsStore } from '@/store/settingsStore';
+import { useAppStore } from '@/store';
 
 interface DailyForecastProps {
   dailyData: DayWeather[];
@@ -13,7 +13,7 @@ interface DailyForecastProps {
 }
 
 export function DailyForecast({ dailyData, className = '', isLoading = false, timezone }: DailyForecastProps) {
-  const { settings } = useSettingsStore();
+  const { settings } = useAppStore();
 
   const formatDayName = (dateString: string, index: number, cityTimezone?: string) => {
     // The first day in the forecast array should always be "Today" for that location

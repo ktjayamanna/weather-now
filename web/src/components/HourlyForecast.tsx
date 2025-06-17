@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { HourlyWeather } from '@/types/weather';
 import { WeatherIcon } from '@/components/WeatherIcon';
 import { getTemperatureDisplay } from '@/lib/utils';
-import { useSettingsStore } from '@/store/settingsStore';
+import { useAppStore } from '@/store';
 
 interface HourlyForecastProps {
   hourlyData: HourlyWeather[];
@@ -15,7 +15,7 @@ interface HourlyForecastProps {
 }
 
 export function HourlyForecast({ hourlyData, className = '', isLoading = false, timezone }: HourlyForecastProps) {
-  const { settings } = useSettingsStore();
+  const { settings } = useAppStore();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollLeft = () => {

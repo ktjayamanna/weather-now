@@ -6,7 +6,7 @@ import { WeatherIcon } from '@/components/WeatherIcon';
 import { HourlyForecast } from '@/components/HourlyForecast';
 import { DailyForecast } from '@/components/DailyForecast';
 import { formatLastUpdated, getTemperatureDisplay } from '@/lib/utils';
-import { useSettingsStore } from '@/store/settingsStore';
+import { useAppStore } from '@/store';
 
 interface CityDetailsModalProps {
   city: City;
@@ -17,7 +17,7 @@ interface CityDetailsModalProps {
 }
 
 export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = false, isForecastLoading = false }: CityDetailsModalProps) {
-  const { settings, setForecastView } = useSettingsStore();
+  const { settings, setForecastView } = useAppStore();
   const getWeatherGradient = (condition: string) => {
     const lowerCondition = condition.toLowerCase();
     if (lowerCondition.includes('sunny') || lowerCondition.includes('clear')) {

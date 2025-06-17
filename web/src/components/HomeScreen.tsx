@@ -5,7 +5,7 @@ import { City } from '@/types/weather';
 import { SearchBar } from '@/components/SearchBar';
 import { WeatherIcon } from '@/components/WeatherIcon';
 import { formatLastUpdatedShort, getTemperatureDisplay } from '@/lib/utils';
-import { useSettingsStore } from '@/store/settingsStore';
+import { useAppStore } from '@/store';
 import { Button } from '@/components/ui/button';
 
 interface HomeScreenProps {
@@ -20,7 +20,7 @@ interface HomeScreenProps {
 }
 
 export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, onOpenSettings, isLoading, clearSearchInput, onClearComplete }: HomeScreenProps) {
-  const { settings } = useSettingsStore();
+  const { settings } = useAppStore();
   const getWeatherGradient = (condition: string) => {
     const lowerCondition = condition.toLowerCase();
     if (lowerCondition.includes('sunny') || lowerCondition.includes('clear')) {
