@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, MapPin } from 'lucide-react';
+import { Search, MapPin, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -113,6 +113,12 @@ export function SearchBar({
     onSearch(locationString);
   };
 
+  const handleClearInput = () => {
+    setQuery('');
+    setShowSuggestions(false);
+    setSelectedIndex(-1);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!showSuggestions) return;
 
@@ -154,10 +160,23 @@ export function SearchBar({
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={isLoading}
-            className="pl-10 pr-20 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all duration-200"
+            className={cn(
+              "pl-10 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all duration-200",
+              query.trim() ? "pr-28" : "pr-20"
+            )}
             autoComplete="off"
             data-testid="search-input"
           />
+          {query.trim() && (
+            <button
+              type="button"
+              onClick={handleClearInput}
+              className="absolute right-20 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white/70 hover:text-white transition-all duration-200"
+              data-testid="clear-search-button"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          )}
           <Button
             type="submit"
             disabled={isLoading || !query.trim()}
