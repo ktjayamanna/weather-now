@@ -52,7 +52,7 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, onOpen
     <div className="min-h-screen bg-gradient-to-br from-blue-400 to-blue-600 px-4 py-8">
       <div className="max-w-md md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto">
         <div className="relative text-center text-white mb-8">
-          <h1 className="text-3xl font-light mb-2">Weather</h1>
+          <h1 className="text-3xl font-light mb-2">Weather Now</h1>
           <Button
             onClick={onOpenSettings}
             variant="ghost"

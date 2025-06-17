@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Weather Now - iPhone Weather App Clone",
+  title: "Weather Now",
   description: "A beautiful weather app that emulates the iPhone weather experience for non-Mac users",
 };
 
