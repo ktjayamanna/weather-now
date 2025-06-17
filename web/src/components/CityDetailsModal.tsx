@@ -196,7 +196,6 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
                 <DailyForecast
                   dailyData={city.forecast?.forecastday || []}
                   isLoading={isForecastLoading}
-                  timezone={city.timezone}
                 />
               </div>
             )}

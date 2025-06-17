@@ -75,7 +75,7 @@ describe('Auto-Update Mechanism', () => {
     });
 
     it('should default to 1 hour for unknown frequency', () => {
-      // @ts-ignore - testing invalid input
+      // @ts-expect-error - testing invalid input
       autoUpdateManager.setUpdateFrequency('invalid' as UpdateFrequency);
       expect(autoUpdateManager.getUpdateInterval()).toBe(60 * 60 * 1000);
     });

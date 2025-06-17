@@ -3,7 +3,7 @@
  * Tests what happens when data fetching goes wrong
  */
 
-import { TRPCError } from '@trpc/server';
+// TRPCError is not used in this test file but imported for potential future use
 
 // Mock weather API error scenarios
 class WeatherAPIError extends Error {
@@ -21,7 +21,7 @@ class WeatherService {
     this.apiKey = apiKey;
   }
 
-  async getCurrentWeather(city: string): Promise<any> {
+  async getCurrentWeather(city: string): Promise<Record<string, unknown>> {
     if (!this.apiKey) {
       throw new Error('WEATHER_API_KEY environment variable is not set');
     }
@@ -34,7 +34,7 @@ class WeatherService {
     return this.simulateAPICall(city);
   }
 
-  async getForecast(city: string, days: number = 7): Promise<any> {
+  async getForecast(city: string, days: number = 7): Promise<Record<string, unknown>> {
     if (!this.apiKey) {
       throw new Error('WEATHER_API_KEY environment variable is not set');
     }
@@ -51,7 +51,7 @@ class WeatherService {
     return this.simulateAPICall(city, 'forecast');
   }
 
-  async searchLocations(query: string): Promise<any> {
+  async searchLocations(query: string): Promise<Record<string, unknown>> {
     if (!this.apiKey) {
       throw new Error('WEATHER_API_KEY environment variable is not set');
     }
@@ -64,7 +64,7 @@ class WeatherService {
     return this.simulateAPICall(query, 'search');
   }
 
-  private async simulateAPICall(input: string, type: 'current' | 'forecast' | 'search' = 'current'): Promise<any> {
+  private async simulateAPICall(input: string, type: 'current' | 'forecast' | 'search' = 'current'): Promise<Record<string, unknown>> {
     // Simulate network errors
     if (input.toLowerCase().includes('network-error')) {
       throw new Error('Failed to fetch weather data');
@@ -468,7 +468,7 @@ describe('Weather API Error Handling', () => {
       const retryDelays = [100, 200, 400, 800]; // Exponential backoff pattern
       let attemptCount = 0;
 
-      const retryWithBackoff = async (maxRetries: number): Promise<any> => {
+      const retryWithBackoff = async (maxRetries: number): Promise<Record<string, unknown>> => {
         for (let i = 0; i < maxRetries; i++) {
           try {
             attemptCount++;

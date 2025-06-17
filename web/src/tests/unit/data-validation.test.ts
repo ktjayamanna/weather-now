@@ -3,7 +3,7 @@
  * Tests for data validation, timezone handling, and business logic accuracy
  */
 
-import { convertTemperature, formatLastUpdated, getWeatherIconType } from '@/lib/utils';
+import { convertTemperature, getWeatherIconType } from '@/lib/utils';
 
 // Mock timezone data for testing
 const mockTimezones = {
@@ -247,7 +247,12 @@ describe('Data Validation and Integrity', () => {
 
     it('should validate weather data consistency', () => {
       // Mock weather data consistency checks
-      const validateWeatherConsistency = (data: any): boolean => {
+      const validateWeatherConsistency = (data: {
+        temp_c?: number;
+        temp_f?: number;
+        feelslike_c?: number;
+        feelslike_f?: number;
+      }): boolean => {
         // Temperature consistency
         if (data.temp_c !== undefined && data.temp_f !== undefined) {
           const convertedF = (data.temp_c * 9/5) + 32;

@@ -9,13 +9,12 @@ interface DailyForecastProps {
   dailyData: DayWeather[];
   className?: string;
   isLoading?: boolean;
-  timezone?: string;
 }
 
-export function DailyForecast({ dailyData, className = '', isLoading = false, timezone }: DailyForecastProps) {
+export function DailyForecast({ dailyData, className = '', isLoading = false }: DailyForecastProps) {
   const { settings } = useAppStore();
 
-  const formatDayName = (dateString: string, index: number, cityTimezone?: string) => {
+  const formatDayName = (dateString: string, index: number) => {
     // The first day in the forecast array should always be "Today" for that location
     // WeatherAPI provides forecast data starting from the current day in the location's timezone
     if (index === 0) {
@@ -98,7 +97,7 @@ export function DailyForecast({ dailyData, className = '', isLoading = false, ti
             >
               {/* Day */}
               <div className="text-white/80 text-xs font-medium whitespace-nowrap">
-                {formatDayName(day.date, index, timezone)}
+                {formatDayName(day.date, index)}
               </div>
 
               {/* Weather Icon */}

@@ -5,7 +5,6 @@ import {
   getTemperatureDisplay,
   getTemperatureWithUnit,
   formatTemperature,
-  formatLastUpdated,
   formatLastUpdatedShort,
   getWeatherGradient,
   getWeatherIconType
@@ -127,12 +126,12 @@ describe('Date Formatting Functions', () => {
 
     beforeEach(() => {
       // Mock Date constructor
-      global.Date = jest.fn((date?: any) => {
+      global.Date = jest.fn((date?: string | number | Date) => {
         if (date) {
           return new RealDate(date);
         }
         return new RealDate('2024-01-01T12:00:00Z');
-      }) as any;
+      }) as DateConstructor;
 
       // Mock Date.now()
       global.Date.now = jest.fn(() => new RealDate('2024-01-01T12:00:00Z').getTime());
