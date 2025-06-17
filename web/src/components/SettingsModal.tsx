@@ -32,12 +32,13 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
       />
       
       {/* Modal */}
-      <div className="relative w-full max-w-md rounded-3xl overflow-hidden bg-gradient-to-br from-blue-500 to-blue-700 shadow-2xl transform transition-all duration-300">
-        
+      <div className="relative w-full max-w-md rounded-3xl overflow-hidden bg-gradient-to-br from-blue-500 to-blue-700 shadow-2xl transform transition-all duration-300" data-testid="settings-modal">
+
         {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+          data-testid="close-settings-button"
         >
           <X className="w-5 h-5" />
         </button>
@@ -96,6 +97,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                       ? 'bg-white/30 text-white'
                       : 'bg-white/10 text-white/80 hover:bg-white/20'
                   }`}
+                  data-testid={`temp-unit-${option.value}`}
                 >
                   <div className="flex items-center justify-between">
                     <span>{option.label}</span>

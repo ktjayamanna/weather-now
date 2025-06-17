@@ -40,7 +40,7 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, onOpen
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-400 to-blue-600">
-        <div className="text-white text-center">
+        <div className="text-white text-center" data-testid="loading">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
           <p>Loading weather data...</p>
         </div>
@@ -58,6 +58,7 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, onOpen
             variant="ghost"
             size="icon"
             className="absolute top-0 right-0 text-white hover:bg-white/20"
+            data-testid="settings-button"
           >
             <Settings className="h-5 w-5" />
           </Button>
@@ -88,6 +89,7 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, onOpen
                   className={`city-card relative overflow-hidden rounded-2xl bg-gradient-to-r ${getWeatherGradient(
                     city.currentWeather?.condition?.text || 'clear'
                   )} p-4 md:p-5 lg:p-6 animate-slide-in group`}
+                  data-testid="city-card"
                 >
                   <div
                     onClick={() => onCityClick(city)}
@@ -103,6 +105,7 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, onOpen
                             }}
                             className="group/pin w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center hover:bg-white/10 hover:backdrop-blur-sm transition-all duration-200 hover:scale-110"
                             title="Unpin city"
+                            data-testid="remove-city-button"
                           >
                             <Pin className="w-3 h-3 md:w-4 md:h-4 text-white/70 group-hover/pin:hidden transition-all duration-200" />
                             <PinOff className="w-3 h-3 md:w-4 md:h-4 text-white/50 hidden group-hover/pin:block transition-all duration-200" />

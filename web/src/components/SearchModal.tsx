@@ -51,7 +51,7 @@ export function SearchModal({ city, isLoading, error, onAddCity, onClose }: Sear
       {/* Modal */}
       <div className={`relative w-full max-w-sm rounded-3xl overflow-hidden bg-gradient-to-br ${
         city ? getWeatherGradient(city.currentWeather?.condition?.text || 'clear') : 'from-blue-400 to-blue-600'
-      } shadow-2xl transform transition-all duration-300`}>
+      } shadow-2xl transform transition-all duration-300`} data-testid="search-modal">
         
         {/* Close Button */}
         <button
@@ -147,6 +147,7 @@ export function SearchModal({ city, isLoading, error, onAddCity, onClose }: Sear
               <button
                 onClick={() => onAddCity(city)}
                 className="w-full bg-white/20 backdrop-blur-md border border-white/30 rounded-xl py-4 px-6 text-white font-medium flex items-center justify-center space-x-2 hover:bg-white/30 transition-colors"
+                data-testid="add-city-button"
               >
                 <Plus className="w-5 h-5" />
                 <span>Add to My Cities</span>

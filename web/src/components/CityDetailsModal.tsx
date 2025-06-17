@@ -62,12 +62,13 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
       {/* Modal */}
       <div className={`relative w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl rounded-3xl overflow-hidden bg-gradient-to-br ${
         getWeatherGradient(city.currentWeather?.condition?.text || 'clear')
-      } shadow-2xl transform transition-all duration-300 max-h-[90vh] overflow-y-auto scrollbar-custom`}>
+      } shadow-2xl transform transition-all duration-300 max-h-[90vh] overflow-y-auto scrollbar-custom`} data-testid="city-details-modal">
         
         {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+          data-testid="close-modal-button"
         >
           <X className="w-5 h-5" />
         </button>
@@ -78,6 +79,7 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
             onClick={() => onRefresh(city.id)}
             disabled={isRefreshing}
             className="absolute top-4 right-16 z-10 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors disabled:opacity-50"
+            data-testid="refresh-button"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
@@ -159,6 +161,7 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
                       ? 'bg-white/30 text-white shadow-sm'
                       : 'text-white/70 hover:text-white/90'
                   }`}
+                  data-testid="hourly-forecast-button"
                 >
                   Hourly
                 </button>
@@ -169,6 +172,7 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
                       ? 'bg-white/30 text-white shadow-sm'
                       : 'text-white/70 hover:text-white/90'
                   }`}
+                  data-testid="daily-forecast-button"
                 >
                   Daily
                 </button>
@@ -177,20 +181,24 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
 
             {/* Conditional Forecast Display */}
             {settings.forecastView === 'hourly' ? (
-              <HourlyForecast
-                hourlyData={[
-                  ...(city.forecast?.forecastday?.[0]?.hour || []),
-                  ...(city.forecast?.forecastday?.[1]?.hour || [])
-                ]}
-                isLoading={isForecastLoading}
-                timezone={city.timezone}
-              />
+              <div data-testid="hourly-forecast">
+                <HourlyForecast
+                  hourlyData={[
+                    ...(city.forecast?.forecastday?.[0]?.hour || []),
+                    ...(city.forecast?.forecastday?.[1]?.hour || [])
+                  ]}
+                  isLoading={isForecastLoading}
+                  timezone={city.timezone}
+                />
+              </div>
             ) : (
-              <DailyForecast
-                dailyData={city.forecast?.forecastday || []}
-                isLoading={isForecastLoading}
-                timezone={city.timezone}
-              />
+              <div data-testid="daily-forecast">
+                <DailyForecast
+                  dailyData={city.forecast?.forecastday || []}
+                  isLoading={isForecastLoading}
+                  timezone={city.timezone}
+                />
+              </div>
             )}
           </div>
 

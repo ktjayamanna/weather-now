@@ -143,7 +143,7 @@ export function SearchBar({
   };
 
   return (
-    <div ref={searchRef} className={cn('relative', className)}>
+    <div ref={searchRef} className={cn('relative', className)} data-testid="search-bar">
       <form onSubmit={handleSubmit}>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
@@ -156,6 +156,7 @@ export function SearchBar({
             disabled={isLoading}
             className="pl-10 pr-20 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all duration-200"
             autoComplete="off"
+            data-testid="search-input"
           />
           <Button
             type="submit"
