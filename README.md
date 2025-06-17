@@ -13,7 +13,7 @@ Weather now is an alternative to the Non-Mac users who are looking for a weather
 - Vercel
 - PostHog
 
-![System Design](diagramsys.png)
+![System Design](sys.png)
 
 # License
 This project is licensed under the MIT License.
