@@ -11,6 +11,9 @@ Weather now is an alternative to the Non-Mac users who are looking for a weather
 - Jest
 - Cypress
 - Vercel
+- PostHog
+
+![System Design](diagramsys.png)
 
 # License
 This project is licensed under the MIT License.
