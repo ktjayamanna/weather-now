@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TRPCProvider } from "@/components/providers/TRPCProvider";
+import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import { ToastProvider } from "@/components/ui/toast";
 
 const geistSans = Geist({
@@ -29,11 +30,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TRPCProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </TRPCProvider>
+        <PostHogProvider>
+          <TRPCProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </TRPCProvider>
+        </PostHogProvider>
       </body>
     </html>
   );
