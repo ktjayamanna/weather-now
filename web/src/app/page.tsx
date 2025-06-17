@@ -116,14 +116,21 @@ export default function Home() {
     };
 
     const updateAllCities = async () => {
-      if (defaultCities.length === 0 || !shouldUpdate()) return;
+      if (defaultCities.length === 0) return;
+
+      // Only update if enough time has passed
+      if (!shouldUpdate()) {
+        console.log('Auto-update skipped - not enough time has passed');
+        return;
+      }
 
       console.log('Auto-updating weather data for all cities...');
 
       try {
-        // Update weather for each city
+        // Fetch fresh data for each city
         const updatePromises = defaultCities.map(async (city) => {
           try {
+            // Fetch fresh data - this will update React Query cache
             const response = await utils.weather.getCurrentWeather.fetch({
               city: `${city.name}, ${city.country}`
             });
@@ -162,8 +169,8 @@ export default function Home() {
       }
     };
 
-    // Initial update check
-    updateAllCities();
+    // Don't run initial update immediately - let the app load with cached data first
+    // Only set up the interval for periodic updates
 
     // Set up interval for future updates
     const interval = setInterval(updateAllCities, getUpdateInterval());
