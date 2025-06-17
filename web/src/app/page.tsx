@@ -36,6 +36,7 @@ export default function Home() {
   const { settings } = useSettingsStore();
 
   const { addToast } = useToast();
+  const utils = trpc.useUtils();
 
   // Fetch weather for search query
   const {
@@ -114,14 +115,51 @@ export default function Home() {
       return timeSinceLastUpdate >= getUpdateInterval();
     };
 
-    const updateAllCities = () => {
+    const updateAllCities = async () => {
       if (defaultCities.length === 0 || !shouldUpdate()) return;
 
       console.log('Auto-updating weather data for all cities...');
-      // For now, we'll just update the timestamp and let the user manually refresh
-      // A full auto-update implementation would require more complex state management
-      setLastAutoUpdate(new Date().toISOString());
-      console.log('Auto-update timestamp updated');
+
+      try {
+        // Update weather for each city
+        const updatePromises = defaultCities.map(async (city) => {
+          try {
+            const response = await utils.weather.getCurrentWeather.fetch({
+              city: `${city.name}, ${city.country}`
+            });
+
+            if (response?.current) {
+              updateCityWeather(city.id, response.current);
+              console.log(`Updated weather for ${city.name}`);
+            }
+          } catch (error) {
+            console.error(`Failed to update weather for ${city.name}:`, error);
+            // Continue with other cities even if one fails
+          }
+        });
+
+        // Wait for all updates to complete
+        await Promise.allSettled(updatePromises);
+
+        // Update the last auto-update timestamp
+        setLastAutoUpdate(new Date().toISOString());
+        console.log('Auto-update completed successfully');
+
+        // Show success toast
+        addToast({
+          title: 'Weather Updated',
+          description: `Auto-updated weather for ${defaultCities.length} ${defaultCities.length === 1 ? 'city' : 'cities'}`,
+          type: 'success'
+        });
+
+      } catch (error) {
+        console.error('Auto-update failed:', error);
+        addToast({
+          title: 'Auto-update Failed',
+          description: 'Failed to auto-update weather data',
+          type: 'error'
+        });
+      }
     };
 
     // Initial update check
@@ -131,7 +169,7 @@ export default function Home() {
     const interval = setInterval(updateAllCities, getUpdateInterval());
 
     return () => clearInterval(interval);
-  }, [settings.updateFrequency, defaultCities, lastAutoUpdate, setLastAutoUpdate]);
+  }, [settings.updateFrequency, defaultCities, lastAutoUpdate, setLastAutoUpdate, updateCityWeather, addToast, utils.weather.getCurrentWeather]);
 
   // Load default city (Colombo) on first visit if no cities exist
   useEffect(() => {
