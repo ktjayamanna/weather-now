@@ -103,7 +103,7 @@ export default function Home() {
     const getUpdateInterval = () => {
       switch (settings.updateFrequency) {
         case '30min': return 30 * 60 * 1000; // 30 minutes
-        case '1hour': return 60 * 60 * 1000; // 1 hour
+        case '1hour': return 3 * 60 * 1000; // 1 hour
         case '1day': return 24 * 60 * 60 * 1000; // 1 day
         default: return 60 * 60 * 1000; // Default to 1 hour
       }

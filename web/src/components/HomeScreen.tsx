@@ -4,9 +4,10 @@ import { MapPin, Pin, PinOff, Settings } from 'lucide-react';
 import { City } from '@/types/weather';
 import { SearchBar } from '@/components/SearchBar';
 import { WeatherIcon } from '@/components/WeatherIcon';
-import { formatLastUpdatedShort, getTemperatureDisplay } from '@/lib/utils';
+import { getTemperatureDisplay } from '@/lib/utils';
 import { useAppStore } from '@/store';
 import { Button } from '@/components/ui/button';
+import { RelativeTimeDisplay } from '@/hooks/useRelativeTime';
 
 interface HomeScreenProps {
   cities: City[];
@@ -123,7 +124,10 @@ export function HomeScreen({ cities, onSearch, onCityClick, onRemoveCity, onOpen
                         </p>
                         {city.lastUpdated && (
                           <p className="text-white/60 text-xs mt-1">
-                            Updated {formatLastUpdatedShort(city.lastUpdated)}
+                            <RelativeTimeDisplay
+                              timestamp={city.lastUpdated}
+                              prefix="Updated "
+                            />
                           </p>
                         )}
                       </div>

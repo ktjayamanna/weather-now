@@ -5,8 +5,9 @@ import { City } from '@/types/weather';
 import { WeatherIcon } from '@/components/WeatherIcon';
 import { HourlyForecast } from '@/components/HourlyForecast';
 import { DailyForecast } from '@/components/DailyForecast';
-import { formatLastUpdated, getTemperatureDisplay } from '@/lib/utils';
+import { getTemperatureDisplay } from '@/lib/utils';
 import { useAppStore } from '@/store';
+import { RelativeTimeDisplay } from '@/hooks/useRelativeTime';
 
 interface CityDetailsModalProps {
   city: City;
@@ -99,7 +100,11 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
 
             {city.lastUpdated && (
               <p className="text-white/60 text-xs mt-1 hidden lg:block">
-                Last updated: {formatLastUpdated(city.lastUpdated)}
+                <RelativeTimeDisplay
+                  timestamp={city.lastUpdated}
+                  prefix="Last updated "
+                  updateInterval={30000}
+                />
               </p>
             )}
           </div>
