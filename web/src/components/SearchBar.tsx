@@ -190,7 +190,7 @@ export function SearchBar({
 
       {/* Suggestions dropdown */}
       {showSuggestions && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white/10 backdrop-blur-xl rounded-xl shadow-2xl border border-white/20 max-h-60 overflow-y-auto z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white/10 backdrop-blur-xl rounded-xl shadow-2xl border border-white/20 max-h-60 overflow-y-auto scrollbar-custom z-50">
           {isSearching ? (
             <div className="p-4 text-center text-white/80">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white/60 mx-auto mb-2"></div>
