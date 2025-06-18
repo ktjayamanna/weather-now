@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { HomeScreen } from '@/components/HomeScreen';
 import { SearchModal } from '@/components/SearchModal';
 import { CityDetailsModal } from '@/components/CityDetailsModal';
@@ -18,6 +18,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [clearSearchInput, setClearSearchInput] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState<string | null>(null);
+  const processedForecastRef = useRef<string | null>(null);
 
   const store = useAppStore();
   const {
@@ -28,6 +29,7 @@ export default function Home() {
     error,
     updateCityWeather,
     updateCityForecast,
+    updateCityLocalTime,
     lastAutoUpdate,
     setLastAutoUpdate,
     settings
@@ -231,9 +233,32 @@ export default function Home() {
   // Handle forecast data
   useEffect(() => {
     if (forecastData && selectedCity) {
-      updateCityForecast(selectedCity.id, forecastData.forecast);
+      // Create a unique key for this forecast data to prevent duplicate processing
+      const forecastKey = `${selectedCity.id}-${forecastData.location.localtime_epoch}`;
+
+      // Only process if we haven't already processed this exact forecast data
+      if (processedForecastRef.current !== forecastKey) {
+        processedForecastRef.current = forecastKey;
+
+        updateCityForecast(selectedCity.id, forecastData.forecast);
+
+        // Also update the city's local time information from the forecast response
+        updateCityLocalTime(selectedCity.id, forecastData.location.localtime, forecastData.location.localtime_epoch);
+
+        // Update the selected city with the latest local time
+        setSelectedCity(prevCity => {
+          if (prevCity && prevCity.id === selectedCity.id) {
+            return {
+              ...prevCity,
+              localtime: forecastData.location.localtime,
+              localtime_epoch: forecastData.location.localtime_epoch,
+            };
+          }
+          return prevCity;
+        });
+      }
     }
-  }, [forecastData, selectedCity, updateCityForecast]);
+  }, [forecastData, selectedCity?.id, updateCityForecast, updateCityLocalTime]);
 
   const handleSearch = (city: string) => {
     setError(null);

@@ -15,6 +15,7 @@ export interface WeatherSlice {
   setError: (error: string | null) => void;
   updateCityWeather: (cityId: string, weather: CurrentWeather) => void;
   updateCityForecast: (cityId: string, forecast: ForecastWeather) => void;
+  updateCityLocalTime: (cityId: string, localtime: string, localtime_epoch: number) => void;
   setRefreshing: (refreshing: boolean) => void;
   setLastAutoUpdate: (timestamp: string) => void;
 }
@@ -127,6 +128,36 @@ export const createWeatherSlice: StateCreator<
 
     set({ defaultCities: updatedDefaultCities });
   },
+
+  updateCityLocalTime: (cityId: string, localtime: string, localtime_epoch: number) => {
+    const { currentCity, defaultCities } = get();
+
+    // Update current city if it matches
+    if (currentCity && currentCity.id === cityId) {
+      set({
+        currentCity: {
+          ...currentCity,
+          localtime,
+          localtime_epoch,
+          lastUpdated: new Date().toISOString()
+        }
+      });
+    }
+
+    // Update in default cities list
+    const updatedDefaultCities = defaultCities.map(city =>
+      city.id === cityId
+        ? {
+            ...city,
+            localtime,
+            localtime_epoch,
+            lastUpdated: new Date().toISOString()
+          }
+        : city
+    );
+
+    set({ defaultCities: updatedDefaultCities });
+  },
 });
 
 export const createCityFromWeatherData = (
@@ -134,7 +165,7 @@ export const createCityFromWeatherData = (
   weatherData: { location: Location; current: CurrentWeather }
 ): City => {
   const { location, current } = weatherData;
-  
+
   return {
     id: `${location.lat}-${location.lon}`,
     name: location.name,
@@ -143,6 +174,8 @@ export const createCityFromWeatherData = (
     lat: location.lat,
     lon: location.lon,
     timezone: location.tz_id,
+    localtime: location.localtime,
+    localtime_epoch: location.localtime_epoch,
     currentWeather: current,
     lastUpdated: new Date().toISOString(),
   };

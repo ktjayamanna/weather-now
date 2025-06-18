@@ -11,10 +11,10 @@ interface HourlyForecastProps {
   hourlyData: HourlyWeather[];
   className?: string;
   isLoading?: boolean;
-  timezone?: string;
+  localtime?: string;
 }
 
-export function HourlyForecast({ hourlyData, className = '', isLoading = false, timezone }: HourlyForecastProps) {
+export function HourlyForecast({ hourlyData, className = '', isLoading = false, localtime }: HourlyForecastProps) {
   const { settings } = useAppStore();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -30,20 +30,27 @@ export function HourlyForecast({ hourlyData, className = '', isLoading = false, 
     }
   };
 
-  // Get next 24 hours of data starting from current hour
+  // Get next 24 hours of data starting from current hour in the city's timezone
   const getCurrentHourIndex = () => {
-    const now = new Date();
-    const currentHour = now.getHours();
+    if (!localtime) {
+      return 0; // Fallback if no localtime provided
+    }
 
-    // Find the index of the current hour in the hourly data
-    const currentHourIndex = hourlyData.findIndex(hour => {
-      const hourDate = new Date(hour.time);
-      return hourDate.getHours() === currentHour &&
-             hourDate.getDate() === now.getDate() &&
-             hourDate.getMonth() === now.getMonth() &&
-             hourDate.getFullYear() === now.getFullYear();
+    // Parse the localtime from the API (format: "2023-07-17 5:48" or "2023-07-17 05:48")
+    // The API returns local time in the city's timezone
+    const currentTime = new Date(localtime);
+    const currentHour = currentTime.getHours();
+
+    // Find the first hour that is at or after the current time
+    const currentHourIndex = hourlyData.findIndex(hourData => {
+      const hourDate = new Date(hourData.time);
+      const dataHour = hourDate.getHours();
+
+      // Find the hour that matches or is after current hour
+      return dataHour >= currentHour;
     });
 
+    // If we found a matching hour, use it; otherwise start from the beginning
     return currentHourIndex >= 0 ? currentHourIndex : 0;
   };
 
@@ -53,51 +60,33 @@ export function HourlyForecast({ hourlyData, className = '', isLoading = false, 
   // If we don't have enough hours from the current time, show what we have
   const displayHours = next24Hours.length > 0 ? next24Hours : hourlyData.slice(0, Math.min(24, hourlyData.length));
 
-  const formatTime = (timeString: string, cityTimezone?: string) => {
+  const formatTime = (timeString: string) => {
+    // Parse the time string - API returns times in the city's local timezone
+    // Format: "2025-06-18 05:00"
     const date = new Date(timeString);
 
-    // Get current time in the city's timezone
-    const nowInCityTz = new Date().toLocaleString('en-US', {
-      timeZone: cityTimezone || 'UTC',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    });
+    // Use localtime from API if available, otherwise fallback to timezone calculation
+    if (localtime) {
+      const currentTime = new Date(localtime);
+      const currentHour = currentTime.getHours();
+      const currentDate = currentTime.toDateString();
 
-    const dateInCityTz = date.toLocaleString('en-US', {
-      timeZone: cityTimezone || 'UTC',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    });
+      const dataHour = date.getHours();
+      const dataDate = date.toDateString();
 
-    // Extract hour and date parts for comparison
-    const nowParts = nowInCityTz.split(', ');
-    const dateParts = dateInCityTz.split(', ');
-    const nowDate = nowParts[0];
-    const nowHour = nowParts[1].split(':')[0];
-    const dateDate = dateParts[0];
-    const dateHour = dateParts[1].split(':')[0];
-
-    // Check if it's the current hour in the city's timezone
-    if (nowDate === dateDate && nowHour === dateHour) {
-      return 'Now';
+      // Check if it's the current hour
+      if (currentDate === dataDate && currentHour === dataHour) {
+        return 'Now';
+      }
     }
 
-    // Format as 12-hour time in the city's timezone
-    const options: Intl.DateTimeFormatOptions = {
-      hour: 'numeric',
-      hour12: true,
-      timeZone: cityTimezone || undefined
-    };
+    // The API returns times already in the city's timezone, so we just need to format the hour
+    // without doing timezone conversion
+    const hour = date.getHours();
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
 
-    return date.toLocaleTimeString('en-US', options);
+    return `${displayHour} ${period}`;
   };
 
   if (isLoading) {
@@ -188,7 +177,7 @@ export function HourlyForecast({ hourlyData, className = '', isLoading = false, 
             >
               {/* Time */}
               <div className="text-white/80 text-xs font-medium whitespace-nowrap">
-                {formatTime(hour.time, timezone)}
+                {formatTime(hour.time)}
               </div>
 
               {/* Weather Icon */}
@@ -217,3 +206,5 @@ export function HourlyForecast({ hourlyData, className = '', isLoading = false, 
     </div>
   );
 }
+
+export default HourlyForecast;

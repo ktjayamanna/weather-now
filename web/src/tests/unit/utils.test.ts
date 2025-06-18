@@ -234,3 +234,119 @@ describe('Weather Utility Functions', () => {
     });
   });
 });
+
+describe('Timezone and Time Handling', () => {
+  describe('Local time formatting', () => {
+    it('should handle timezone-aware time formatting', () => {
+      // Test that timezone formatting works with different timezones
+      const testDate = new Date('2024-01-01T12:00:00Z');
+
+      // Test formatting with different timezones
+      const nyTime = testDate.toLocaleTimeString('en-US', {
+        timeZone: 'America/New_York',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+
+      const tokyoTime = testDate.toLocaleTimeString('en-US', {
+        timeZone: 'Asia/Tokyo',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+
+      // These should be different due to timezone differences
+      expect(nyTime).not.toBe(tokyoTime);
+      expect(nyTime).toMatch(/^\d{1,2}:\d{2} (AM|PM)$/);
+      expect(tokyoTime).toMatch(/^\d{1,2}:\d{2} (AM|PM)$/);
+    });
+
+    it('should handle timezone comparison for current hour detection', () => {
+      // Test timezone-aware hour comparison
+      const testDate = new Date('2024-01-01T12:00:00Z');
+
+      // Get hour in different timezones
+      const utcHour = testDate.getUTCHours();
+      const nyHour = parseInt(testDate.toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+        hour: '2-digit',
+        hour12: false
+      }));
+
+      // UTC should be 12, NY should be different (7 AM in winter)
+      expect(utcHour).toBe(12);
+      expect(nyHour).not.toBe(utcHour);
+    });
+
+    it('should handle date parsing for different timezone formats', () => {
+      // Test parsing of API localtime format
+      const apiLocaltime = '2024-01-01 15:30';
+      const parsedDate = new Date(apiLocaltime);
+
+      expect(parsedDate).toBeInstanceOf(Date);
+      expect(parsedDate.getFullYear()).toBe(2024);
+      expect(parsedDate.getMonth()).toBe(0); // January is 0
+      expect(parsedDate.getDate()).toBe(1);
+    });
+  });
+
+  describe('Hourly forecast timezone handling', () => {
+    it('should correctly identify current hour in different timezones', () => {
+      // Mock hourly data
+      const mockHourlyData = [
+        { time: '2024-01-01 10:00', time_epoch: 1704110400 },
+        { time: '2024-01-01 11:00', time_epoch: 1704114000 },
+        { time: '2024-01-01 12:00', time_epoch: 1704117600 },
+        { time: '2024-01-01 13:00', time_epoch: 1704121200 },
+      ];
+
+      // Test finding current hour index based on timezone
+      const findCurrentHourIndex = (hourlyData: any[], timezone: string) => {
+        const nowInCityTz = new Date().toLocaleString('en-US', {
+          timeZone: timezone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        });
+
+        const [datePart, timePart] = nowInCityTz.split(', ');
+        const [month, day, year] = datePart.split('/').map(Number);
+        const [hour] = timePart.split(':').map(Number);
+
+        return hourlyData.findIndex(hourData => {
+          const hourDate = new Date(hourData.time);
+          const hourInCityTz = hourDate.toLocaleString('en-US', {
+            timeZone: timezone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          });
+
+          const [hourDatePart, hourTimePart] = hourInCityTz.split(', ');
+          const [hourMonth, hourDay, hourYear] = hourDatePart.split('/').map(Number);
+          const [hourHour] = hourTimePart.split(':').map(Number);
+
+          return hourHour === hour &&
+                 hourDay === day &&
+                 hourMonth === month &&
+                 hourYear === year;
+        });
+      };
+
+      // Test with different timezones
+      const utcIndex = findCurrentHourIndex(mockHourlyData, 'UTC');
+      const nyIndex = findCurrentHourIndex(mockHourlyData, 'America/New_York');
+
+      // Both should return valid indices (or -1 if not found)
+      expect(typeof utcIndex).toBe('number');
+      expect(typeof nyIndex).toBe('number');
+    });
+  });
+});

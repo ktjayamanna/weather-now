@@ -51,6 +51,8 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
 
 
 
+
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -94,6 +96,7 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
               {city.region && city.region !== city.name ? `${city.region}, ` : ''}
               {city.country}
             </p>
+
             {city.lastUpdated && (
               <p className="text-white/60 text-xs mt-1 hidden lg:block">
                 Last updated: {formatLastUpdated(city.lastUpdated)}
@@ -188,7 +191,7 @@ export function CityDetailsModal({ city, onClose, onRefresh, isRefreshing = fals
                     ...(city.forecast?.forecastday?.[1]?.hour || [])
                   ]}
                   isLoading={isForecastLoading}
-                  timezone={city.timezone}
+                  localtime={city.localtime}
                 />
               </div>
             ) : (

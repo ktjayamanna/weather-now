@@ -153,6 +153,8 @@ export interface City {
   lat: number;
   lon: number;
   timezone: string;
+  localtime?: string;
+  localtime_epoch?: number;
   currentWeather?: CurrentWeather;
   forecast?: ForecastWeather;
   lastUpdated?: string;
