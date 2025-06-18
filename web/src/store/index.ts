@@ -17,6 +17,7 @@ export const useAppStore = create<AppStore>()(
         settings: state.settings,
         defaultCities: state.defaultCities,
         currentCity: state.currentCity,
+        lastAutoUpdate: state.lastAutoUpdate,
       }),
     }
   )

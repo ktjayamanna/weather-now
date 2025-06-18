@@ -302,7 +302,7 @@ describe('Timezone and Time Handling', () => {
       ];
 
       // Test finding current hour index based on timezone
-      const findCurrentHourIndex = (hourlyData: any[], timezone: string) => {
+      const findCurrentHourIndex = (hourlyData: { time: string; time_epoch: number }[], timezone: string) => {
         const nowInCityTz = new Date().toLocaleString('en-US', {
           timeZone: timezone,
           year: 'numeric',

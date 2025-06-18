@@ -169,11 +169,25 @@ export default function Home() {
       }
     };
 
-    // Don't run initial update immediately - let the app load with cached data first
-    // Only set up the interval for periodic updates
-
     // Set up interval for future updates
     const interval = setInterval(updateAllCities, getUpdateInterval());
+
+    // Only trigger immediate update when:
+    // 1. We have cities AND
+    // 2. Either no previous update exists (first time with cities) OR enough time has passed
+    // 3. BUT not on every page refresh - only when shouldUpdate() is true due to time elapsed
+    if (defaultCities.length > 0 && shouldUpdate()) {
+      // Additional check: only update if we haven't updated recently (avoid refresh spam)
+      const timeSinceLastUpdate = lastAutoUpdate ?
+        Date.now() - new Date(lastAutoUpdate).getTime() :
+        Infinity; // If no lastAutoUpdate, treat as very old
+
+      // Only update if it's been more than 5 minutes since last update OR it's the first time
+      if (!lastAutoUpdate || timeSinceLastUpdate > 5 * 60 * 1000) {
+        console.log('Auto-update: triggering update check');
+        updateAllCities();
+      }
+    }
 
     return () => clearInterval(interval);
   }, [settings.updateFrequency, defaultCities, lastAutoUpdate, setLastAutoUpdate, updateCityWeather, addToast, utils.weather.getCurrentWeather]);
@@ -258,7 +272,7 @@ export default function Home() {
         });
       }
     }
-  }, [forecastData, selectedCity?.id, updateCityForecast, updateCityLocalTime]);
+  }, [forecastData, selectedCity, updateCityForecast, updateCityLocalTime]);
 
   const handleSearch = (city: string) => {
     setError(null);
